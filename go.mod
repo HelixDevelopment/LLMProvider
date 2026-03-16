@@ -5,7 +5,7 @@ go 1.25.3
 require (
 	digital.vasic.models v0.0.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 )
 
 require (
