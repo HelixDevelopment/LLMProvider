@@ -380,13 +380,11 @@ func TestDeepSeekProvider_HealthCheck(t *testing.T) {
 		provider := NewDeepSeekProvider("invalid-key", "", "deepseek-coder")
 		provider.httpClient.Timeout = 2 * time.Second
 
-		// This will fail because of network/auth issues but exercises the code path
+		// HealthCheck against an invalid API key MUST always return an error,
+		// regardless of whether the network reaches the real API or not
+		// (Article XI §11.2.5 — feature-removal causes test failure).
 		err := provider.HealthCheck()
-		// We expect an error since we can't reach the real API
-		// The error could be network-related or auth-related
-		if err != nil {
-			assert.True(t, true) // Expected - API call failed
-		}
+		assert.Error(t, err, "HealthCheck with invalid-key must surface an error")
 	})
 
 	t.Run("health check timeout", func(t *testing.T) {
