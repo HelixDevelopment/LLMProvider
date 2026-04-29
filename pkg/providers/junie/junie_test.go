@@ -170,6 +170,7 @@ func TestIsJunieInstalled(t *testing.T) {
 }
 
 func TestIsJunieAuthenticated(t *testing.T) {
+	// bluff-scan: no-assert-ok (predicate smoke — bool result depends on host; must not panic)
 	authenticated := junie.IsJunieAuthenticated()
 	if authenticated {
 		t.Logf("Junie should be authenticated: %v", authenticated)
