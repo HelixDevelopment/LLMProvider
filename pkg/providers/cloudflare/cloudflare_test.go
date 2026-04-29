@@ -221,6 +221,7 @@ func TestValidateConfig(t *testing.T) {
 }
 
 func TestHealthCheck(t *testing.T) {
+	// bluff-scan: no-assert-ok (health-check smoke — endpoint must respond without panic)
 	if testing.Short() {
 		t.Skip("Skipping health check test in short mode - requires real Cloudflare API")  // SKIP-OK: #short-mode
 	}

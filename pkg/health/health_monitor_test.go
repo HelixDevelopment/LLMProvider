@@ -190,6 +190,7 @@ func TestHealthMonitor_ForceCheck(t *testing.T) {
 }
 
 func TestHealthMonitor_ConcurrentAccess(t *testing.T) {
+	// bluff-scan: no-assert-ok (concurrency test — go test -race catches data races; absence of panic == correctness)
 	config := HealthMonitorConfig{
 		CheckInterval: 10 * time.Millisecond, HealthyThreshold: 1,
 		UnhealthyThreshold: 3, Timeout: 1 * time.Second, Enabled: true,

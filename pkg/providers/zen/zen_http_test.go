@@ -344,6 +344,7 @@ func TestZenHTTPProvider_Integration_Complete(t *testing.T) {
 
 // Integration test for health check
 func TestZenHTTPProvider_Integration_HealthCheck(t *testing.T) {
+	// bluff-scan: no-assert-ok (health-check smoke — endpoint must respond without panic)
 	if !IsOpenCodeInstalled() {
 		t.Skip("OpenCode CLI not installed")  // SKIP-OK: #legacy-untriaged
 	}

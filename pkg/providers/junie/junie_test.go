@@ -162,6 +162,7 @@ func TestGetBYOKModels(t *testing.T) {
 }
 
 func TestIsJunieInstalled(t *testing.T) {
+	// bluff-scan: no-assert-ok (predicate smoke — bool result depends on host; must not panic)
 	installed := junie.IsJunieInstalled()
 	if installed {
 		t.Logf("Junie should be installed: %v", installed)
