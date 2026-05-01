@@ -28,7 +28,7 @@ func (p *failingProvider) Complete(ctx context.Context, req *models.LLMRequest) 
 	if fail {
 		return nil, errors.New("provider error")
 	}
-	return &models.LLMResponse{Content: "success"}, nil
+	return &models.LLMResponse{Text: "success"}, nil
 }
 
 func (p *failingProvider) CompleteStream(ctx context.Context, req *models.LLMRequest) (<-chan *models.LLMResponse, error) {
@@ -40,7 +40,7 @@ func (p *failingProvider) CompleteStream(ctx context.Context, req *models.LLMReq
 		p.mu.Unlock()
 
 		if !fail {
-			ch <- &models.LLMResponse{Content: "stream chunk"}
+			ch <- &models.LLMResponse{Text: "stream chunk"}
 		}
 	}()
 	return ch, nil
@@ -87,12 +87,12 @@ func TestCircuitBreaker_Complete_Success(t *testing.T) {
 	provider := &failingProvider{}
 	cb := NewDefaultCircuitBreaker("test", provider)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 	resp, err := cb.Complete(context.Background(), req)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
-	assert.Equal(t, "success", resp.Content)
+	assert.Equal(t, "success", resp.Text)
 
 	stats := cb.GetStats()
 	assert.Equal(t, int64(1), stats.TotalRequests)
@@ -110,7 +110,7 @@ func TestCircuitBreaker_OpensAfterFailures(t *testing.T) {
 	provider := &failingProvider{shouldFail: true}
 	cb := NewCircuitBreaker("test", provider, config)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Cause failures to open the circuit
 	for i := 0; i < 3; i++ {
@@ -131,7 +131,7 @@ func TestCircuitBreaker_RejectsWhenOpen(t *testing.T) {
 	provider := &failingProvider{shouldFail: true}
 	cb := NewCircuitBreaker("test", provider, config)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Open the circuit
 	_, _ = cb.Complete(context.Background(), req)
@@ -154,7 +154,7 @@ func TestCircuitBreaker_TransitionsToHalfOpen(t *testing.T) {
 	provider := &failingProvider{shouldFail: true}
 	cb := NewCircuitBreaker("test", provider, config)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Open the circuit
 	_, _ = cb.Complete(context.Background(), req)
@@ -185,7 +185,7 @@ func TestCircuitBreaker_ClosesAfterSuccessesInHalfOpen(t *testing.T) {
 	provider := &failingProvider{shouldFail: true}
 	cb := NewCircuitBreaker("test", provider, config)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Open the circuit
 	_, _ = cb.Complete(context.Background(), req)
@@ -213,7 +213,7 @@ func TestCircuitBreaker_ReopensOnFailureInHalfOpen(t *testing.T) {
 	provider := &failingProvider{shouldFail: true}
 	cb := NewCircuitBreaker("test", provider, config)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Open the circuit
 	_, _ = cb.Complete(context.Background(), req)
@@ -237,7 +237,7 @@ func TestCircuitBreaker_HalfOpenLimitsRequests(t *testing.T) {
 	provider := &failingProvider{shouldFail: true}
 	cb := NewCircuitBreaker("test", provider, config)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Open the circuit
 	_, _ = cb.Complete(context.Background(), req)
@@ -264,7 +264,7 @@ func TestCircuitBreaker_Reset(t *testing.T) {
 	provider := &failingProvider{shouldFail: true}
 	cb := NewCircuitBreaker("test", provider, config)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Open the circuit
 	_, _ = cb.Complete(context.Background(), req)
@@ -283,7 +283,7 @@ func TestCircuitBreaker_Stats(t *testing.T) {
 	provider := &failingProvider{}
 	cb := NewDefaultCircuitBreaker("test-provider", provider)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Make some requests
 	_, _ = cb.Complete(context.Background(), req)
@@ -315,7 +315,7 @@ func TestCircuitBreaker_Listener(t *testing.T) {
 		mu.Unlock()
 	})
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Trigger state change
 	_, _ = cb.Complete(context.Background(), req)
@@ -374,7 +374,7 @@ func TestCircuitBreakerManager_GetAvailableProviders(t *testing.T) {
 	cb := mgr.Register("unhealthy", &failingProvider{shouldFail: true})
 
 	// Open the unhealthy circuit
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 	_, _ = cb.Complete(context.Background(), req)
 	_, _ = cb.Complete(context.Background(), req)
 
@@ -392,7 +392,7 @@ func TestCircuitBreakerManager_ResetAll(t *testing.T) {
 	cb1 := mgr.Register("p1", &failingProvider{shouldFail: true})
 	cb2 := mgr.Register("p2", &failingProvider{shouldFail: true})
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	// Open both circuits
 	_, _ = cb1.Complete(context.Background(), req)
@@ -413,7 +413,7 @@ func TestCircuitBreaker_CompleteStream_Success(t *testing.T) {
 	provider := &failingProvider{}
 	cb := NewDefaultCircuitBreaker("test", provider)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 	ch, err := cb.CompleteStream(context.Background(), req)
 
 	assert.NoError(t, err)
@@ -438,7 +438,7 @@ func TestCircuitBreaker_ConcurrentAccess(t *testing.T) {
 	provider := &failingProvider{}
 	cb := NewCircuitBreaker("test", provider, config)
 
-	req := &models.LLMRequest{ID: "test"}
+	req := &models.LLMRequest{Model: "test"}
 
 	var wg sync.WaitGroup
 	for i := 0; i < 100; i++ {
@@ -510,7 +510,7 @@ func TestCircuitBreaker_ListenerNotifyTimeout_TransitionTo(t *testing.T) {
 	})
 
 	// Force a state transition (closed → open) by recording a failure.
-	req := &models.LLMRequest{ID: "r1"}
+	req := &models.LLMRequest{Model: "r1"}
 	_, _ = cb.Complete(context.Background(), req)
 
 	// Wait until the timeout fires plus a small margin.
@@ -555,7 +555,7 @@ func TestCircuitBreaker_ListenerNotifyTimeout_Reset(t *testing.T) {
 	})
 
 	// Open the circuit (triggers listener which blocks, then times out).
-	req := &models.LLMRequest{ID: "r1"}
+	req := &models.LLMRequest{Model: "r1"}
 	_, _ = cb.Complete(context.Background(), req)
 
 	// Unblock the first (transitionTo) listener and wait for its goroutine to settle.
