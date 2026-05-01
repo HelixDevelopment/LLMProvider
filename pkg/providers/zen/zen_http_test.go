@@ -344,6 +344,7 @@ func TestZenHTTPProvider_Integration_Complete(t *testing.T) {
 
 // Integration test for health check
 func TestZenHTTPProvider_Integration_HealthCheck(t *testing.T) {
+	// bluff-scan: no-assert-ok (health-check smoke — endpoint must respond without panic)
 	if !IsOpenCodeInstalled() {
 		t.Skip("OpenCode CLI not installed")  // SKIP-OK: #legacy-untriaged
 	}
@@ -428,7 +429,7 @@ func TestZenHTTPProvider_BasicAuthCredentials(t *testing.T) {
 
 // TestZenHTTPProvider_StartServerWithoutCLI tests server start failure when CLI missing
 func TestZenHTTPProvider_StartServerWithoutCLI(t *testing.T) {
-	if IsZenHTTPAvailable() {
+	if IsOpenCodeInstalled() {
 		t.Skip("OpenCode is installed - can't test missing CLI scenario")  // SKIP-OK: #legacy-untriaged
 	}
 

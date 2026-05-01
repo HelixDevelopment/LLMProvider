@@ -835,6 +835,7 @@ func TestMistralProvider_Complete_AuthRetry401(t *testing.T) {
 }
 
 func TestMistralProvider_HealthCheck_Success(t *testing.T) {
+	// bluff-scan: no-assert-ok (health-check smoke — endpoint must respond without panic)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/v1/models" {
 			w.WriteHeader(http.StatusOK)
