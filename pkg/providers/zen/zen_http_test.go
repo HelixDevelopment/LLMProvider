@@ -9,6 +9,7 @@ import (
 
 	"digital.vasic.llmprovider/pkg/models"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestZenHTTPProvider_DefaultConfig tests default configuration
@@ -436,7 +437,11 @@ func TestZenHTTPProvider_StartServerWithoutCLI(t *testing.T) {
 	provider := NewZenHTTPProviderWithModel("big-pickle")
 	err := provider.StartServer()
 
-	assert.Error(t, err)
+	if err == nil && provider.IsServerRunning() {
+		t.Skip("Something already listening on port 4096 — can't test missing CLI scenario") // SKIP-OK: #legacy-untriaged
+	}
+
+	require.Error(t, err)
 	assert.Contains(t, err.Error(), "not found")
 }
 
