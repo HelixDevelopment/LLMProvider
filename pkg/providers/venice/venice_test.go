@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -440,8 +441,27 @@ func TestGetCapabilities(t *testing.T) {
 	assert.True(t, caps.SupportsCodeCompletion)
 	assert.True(t, caps.SupportsCodeAnalysis)
 	assert.NotEmpty(t, caps.SupportedModels)
-	assert.Contains(t, caps.SupportedModels, "llama-3.3-70b")
-	assert.Contains(t, caps.SupportedModels, "venice-uncensored")
+	// Model IDs drift as Venice renames its catalogue (e.g.
+	// `venice-uncensored` → `venice-uncensored-1-2` /
+	// `venice-uncensored-role-play`; bare `llama-3.3-70b` got
+	// reissued as a versioned variant on some catalogues). Anti-bluff:
+	// the test asserts that the live Venice API returns AT LEAST ONE
+	// model matching each capability flavour, rather than exact
+	// pre-baked IDs. The original brittle equality assertions were a
+	// CONST-036 violation — they hardcoded model strings that
+	// LLMsVerifier should otherwise be the source of truth for.
+	hasLlama := false
+	hasUncensored := false
+	for _, m := range caps.SupportedModels {
+		if strings.Contains(m, "llama-3") {
+			hasLlama = true
+		}
+		if strings.Contains(m, "uncensored") {
+			hasUncensored = true
+		}
+	}
+	assert.True(t, hasLlama, "expected Venice to expose at least one llama-3* model; got %v", caps.SupportedModels)
+	assert.True(t, hasUncensored, "expected Venice to expose at least one uncensored-flavoured model; got %v", caps.SupportedModels)
 	assert.Contains(t, caps.SupportedFeatures, "web_search")
 	assert.Contains(t, caps.SupportedFeatures, "reasoning")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
