@@ -26,7 +26,7 @@ package main
 import (
     "context"
     "digital.vasic.llmprovider"
-    "digital.vasic.models"
+    "digital.vasic.llmprovider/pkg/models"
     "fmt"
 )
 

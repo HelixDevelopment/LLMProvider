@@ -122,7 +122,7 @@ Lazy initialization pattern:
 import (
     "context"
     "digital.vasic.llmprovider"
-    "digital.vasic.models"
+    "digital.vasic.llmprovider/pkg/models"
 )
 
 func main() {

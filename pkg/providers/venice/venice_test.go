@@ -428,7 +428,33 @@ func TestHealthCheck_Error(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	p := NewProvider("venice-test-key", "", "")
+	// CONST-035 anti-bluff: this test previously instantiated the provider
+	// with NewProvider("venice-test-key", "", "") which defaulted baseURL
+	// to api.venice.ai. The assertion `Contains "venice-uncensored"` then
+	// accidentally exercised whichever models Venice's live catalogue
+	// happened to publish; when Venice retired "venice-uncensored", the
+	// test went red without anything in our codebase changing — a textbook
+	// drift bluff. Replace with an httptest server returning a known
+	// catalogue so we verify the discovery pipeline plumbs models from
+	// API → caps.SupportedModels deterministically.
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/models" {
+			http.Error(w, "unexpected path", http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"data":[
+			{"id":"llama-3.3-70b","object":"model"},
+			{"id":"venice-uncensored","object":"model"},
+			{"id":"qwen3-vl-235b-a22b","object":"model"}
+		]}`))
+	}))
+	defer server.Close()
+
+	// modelsURL derivation in NewProvider strips "/chat/completions" and
+	// appends "/models", so passing "<server>/chat/completions" results
+	// in the discoverer hitting "<server>/models" — the handler above.
+	p := NewProvider("venice-test-key", server.URL+"/chat/completions", "")
 	caps := p.GetCapabilities()
 
 	assert.True(t, caps.SupportsStreaming)
@@ -440,6 +466,10 @@ func TestGetCapabilities(t *testing.T) {
 	assert.True(t, caps.SupportsCodeCompletion)
 	assert.True(t, caps.SupportsCodeAnalysis)
 	assert.NotEmpty(t, caps.SupportedModels)
+	// Positive evidence: discovery pulled the known catalogue from the
+	// controlled endpoint, proving the wiring. If discovery is broken
+	// (e.g. the modelsURL derivation regresses, or the default OpenAI
+	// parser breaks), these assertions fail.
 	assert.Contains(t, caps.SupportedModels, "llama-3.3-70b")
 	assert.Contains(t, caps.SupportedModels, "venice-uncensored")
 	assert.Contains(t, caps.SupportedFeatures, "web_search")
