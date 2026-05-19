@@ -1,9 +1,24 @@
-# Environment files
-.env
-.env.local
-.env.*.local
+# CONST-053 — proper .gitignore (round-292, vasic-digital twin)
 
-# Go
+# Environment / secrets (CONST-042 + CONST-053 §4)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+id_rsa*
+id_ed25519*
+.netrc
+secrets/
+api_keys.sh
+
+# Build artefacts (CONST-053 §1)
+/bin/
+/build/
+/dist/
+/out/
+target/
 *.exe
 *.exe~
 *.dll
@@ -11,17 +26,43 @@
 *.dylib
 *.test
 *.out
+*.a
+*.o
+*.class
+*.pyc
 vendor/
 
-# IDE
-.idea/
-.vscode/
+# Cache files (CONST-053 §2)
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+.next/
+.cache/
+.gradle/
+.terraform/
+
+# Temp files (CONST-053 §3)
+*.tmp
 *.swp
 *.swo
 *~
+*.orig
+*.rej
 
-# OS
+# OS / IDE personal state (CONST-053 §6)
+.idea/
+.history/
+.vscode/
 .DS_Store
 Thumbs.db
 
+# Generated reports / logs (CONST-053 §5)
+*.log
+coverage.out
+htmlcov/
 reports/demos/
+
+# Stray go-build artefacts at repo root
+/runner

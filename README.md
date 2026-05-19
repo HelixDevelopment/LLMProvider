@@ -283,6 +283,85 @@ go mod verify
 4. Add comprehensive test coverage
 5. Update documentation in `README.md` and `CLAUDE.md`
 
+## Anti-Bluff Guarantees (round-292)
+
+This module ships with the four-layer anti-bluff stack required by
+CONST-035 / Article XI §11.9 + CONST-050(A):
+
+| Layer | Artefact | What it proves |
+|-------|----------|----------------|
+| 1 | `pkg/*_test.go` unit suites | API contract per package |
+| 2 | `challenges/runner/main.go` | Real `circuit.NewCircuitBreaker` + `health.NewHealthMonitor` + `retry.CalculateBackoff` exercised across 5 locale fixtures (en/de/es/ja/sr) |
+| 3 | `challenges/llmprovider_describe_challenge.sh` | Paired-mutation Challenge: normal mode exit 0, mutate mode exit 99 |
+| 4 | `challenges/runner/main_test.go` | Pins both branches of the mutation hook (CONST-050(A) §1.1) |
+
+See [`docs/test-coverage.md`](docs/test-coverage.md) for the full
+symbol→test ledger.
+
+### How to run
+
+```bash
+# Layer 1: full unit suite with race detector
+GOMAXPROCS=2 go test -count=1 -race -p 1 ./...
+
+# Layer 2: per-locale runner (exit 0 on success)
+go run ./challenges/runner/
+
+# Layer 3: paired-mutation Challenge (exit 0 normal, 99 mutate)
+./challenges/llmprovider_describe_challenge.sh normal
+./challenges/llmprovider_describe_challenge.sh mutate
+
+# Layer 4: domain Challenges (env-gated; SKIP-OK without target)
+for c in challenges/scripts/*.sh; do bash "$c" || true; done
+```
+
+### What is NOT bluffed
+
+- The runner uses `circuit.NewCircuitBreaker` (real) +
+  `health.NewHealthMonitor` (real) + `retry.CalculateBackoff`
+  (real) — no in-process stub circuit / monitor / backoff.
+- The `controllableProvider` used to drive the breaker is the
+  smallest concrete LLMProvider satisfying the package interface
+  and exists ONLY to flip-flop induced failures so the real
+  breaker observes them. Its failure flag is atomic so probes
+  never race.
+- Every PASS line includes the runtime value
+  (`isOpen=true shortCircuited=true err=...`), so a regression
+  that broke the state machine would surface in the diff, not
+  just in the exit code.
+- The mutation hook is checked by `TestRun_MutationDetected` —
+  if a future edit silently removes the mutation logic, the
+  test fails. This is the §1.1 "paired mutation" requirement.
+- Fixtures are plain YAML in `challenges/fixtures/`; they MUST
+  agree with the real config defaults (`FailureThreshold=3`,
+  initial state `closed`, initial health `unknown`). Mismatch →
+  runner FAIL → Challenge exit 1.
+
+### Cascade (CONST-047 / CONST-051(A))
+
+This anti-bluff stack mirrors the pattern in the HelixDevelopment
+twin (round-276, commit `af49fc4`) and in sibling submodules
+LeakHub (round 266), MCP_Module (round 267), Models (round 268),
+Ouroborous (round 269), Planning (round 270), conversation
+(round 271), DebateOrchestrator (round 272), HelixSpecifier (round
+273), TOON (round 286), VectorDB (round 287), Veritas (round 288),
+Watcher (round 289). The two LLMProvider twins (vasic-digital /
+HelixDevelopment) share source-code parity in pkg/circuit /
+pkg/health / pkg/retry / pkg/models but maintain divergent git
+histories per the round-276 finding. Bumped as part of every
+meta-repo close-out round.
+
+> Verbatim 2026-05-19 operator mandate (preserved per
+> CONST-049 §11.4.17):
+> "all existing tests and Challenges do work in anti-bluff manner
+> - they MUST confirm that all tested codebase really works as
+> expected! We had been in position that all tests do execute with
+> success and all Challenges as well, but in reality the most of
+> the features does not work and can't be used! This MUST NOT be
+> the case and execution of tests and Challenges MUST guarantee
+> the quality, the completition and full usability by end users
+> of the product!"
+
 ## License
 
 This module is part of the HelixAgent project. See root project for license details.
