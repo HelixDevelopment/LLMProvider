@@ -1,0 +1,46 @@
+# pkg/i18n bundle — active English (en) locale for LLMProvider.
+#
+# Every entry maps a CONST-046-migrated hardcoded literal in
+# LLMProvider's provider ValidateConfig paths to a message ID resolved
+# at runtime via Translator.T. A consuming application wires a real
+# locale-aware Translator at boot via i18n.SetTranslator; the in-package
+# NoopTranslator echoes the message ID verbatim for unit tests and
+# backward compatibility.
+#
+# Naming convention: llmprovider_<area>_<short_description>. All IDs
+# prefixed with llmprovider_ to avoid namespace collision with other
+# packages' bundles when loaded into the same go-i18n.Bundle.
+#
+# Round-337 §11.4 anti-bluff sweep (2026-05-19): migrated the
+# user-facing ValidateConfig validation error messages — the strings a
+# consuming application surfaces to an end user when provider
+# configuration is incomplete or malformed. These were hardcoded
+# English literals, silently breaking the validation experience for
+# non-English users (CONST-046).
+
+llmprovider_validate_api_key_required:
+  other: "API key is required"
+
+llmprovider_validate_api_key_required_groq:
+  other: "API key is required (Groq API key starts with 'gsk_')"
+
+llmprovider_validate_api_key_format_groq:
+  other: "Invalid API key format (should start with 'gsk_')"
+
+llmprovider_validate_api_key_format_xai:
+  other: "Invalid API key format (should start with 'xai-')"
+
+llmprovider_validate_base_url_required:
+  other: "base URL is required"
+
+llmprovider_validate_model_required:
+  other: "model is required"
+
+llmprovider_validate_account_id_required:
+  other: "Account ID is required"
+
+llmprovider_validate_oauth_reader_required:
+  other: "OAuth credential reader is required"
+
+llmprovider_validate_opencode_api_key_required:
+  other: "OPENCODE_API_KEY is required for non-free models"
