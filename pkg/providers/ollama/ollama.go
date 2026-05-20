@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"digital.vasic.llmprovider/pkg/discovery"
+	"digital.vasic.llmprovider/pkg/i18n"
 	"digital.vasic.llmprovider/pkg/models"
 )
 
@@ -325,11 +326,15 @@ func (o *OllamaProvider) ValidateConfig(config map[string]interface{}) (bool, []
 	var errors []string
 
 	if o.baseURL == "" {
-		errors = append(errors, "base URL is required")
+		// CONST-046 round-425: validation error routed through i18n.
+		errors = append(errors, i18n.Tr(context.Background(),
+			"llmprovider_validate_base_url_required", nil))
 	}
 
 	if o.model == "" {
-		errors = append(errors, "model is required")
+		// CONST-046 round-425: validation error routed through i18n.
+		errors = append(errors, i18n.Tr(context.Background(),
+			"llmprovider_validate_model_required", nil))
 	}
 
 	return len(errors) == 0, errors
