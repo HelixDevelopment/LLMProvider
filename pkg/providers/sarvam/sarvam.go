@@ -441,7 +441,7 @@ func (p *SarvamProvider) GetCapabilities() *models.ProviderCapabilities {
 func (p *SarvamProvider) ValidateConfig(config map[string]interface{}) (bool, []string) {
 	var errors []string
 	if p.apiKey == "" {
-		errors = append(errors, "API key is required")
+		errors = append(errors, i18n.Tr(context.Background(), "llmprovider_validate_api_key_required", nil))
 	}
 	return len(errors) == 0, errors
 }
