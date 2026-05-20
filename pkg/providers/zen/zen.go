@@ -1016,7 +1016,7 @@ func (p *ZenProvider) GetCapabilities() *models.ProviderCapabilities {
 			"provider":     "OpenCode Zen",
 			"model_family": "Mixed",
 			"api_version":  "v1",
-			"note":         "OpenCode Zen gateway - Free models (Big Pickle, Grok Code Fast, GLM 4.7, GPT 5 Nano)",
+			"note":         i18n.Tr(context.Background(), "provider.zen.description", nil),
 			"free_tier":    "true",
 			"base_url":     ZenAPIURL,
 		},
