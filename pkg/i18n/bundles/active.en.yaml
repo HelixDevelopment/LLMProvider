@@ -26,6 +26,13 @@
 # round-337 (HelixDevelopment lineage) and round-338 (vasic-digital
 # lineage) i18n sweeps landed independently on diverged remotes; this
 # bundle is the union of both — disjoint key namespaces, no overlap.
+#
+# Round-379 §11.4 anti-bluff sweep (2026-05-19): migrated 22 residual
+# ValidateConfig error literals across 10 provider files (ai21 not in
+# scope this round; cohere, deepseek, mistral, zai, claude, qwen,
+# hyperbolic, kilo, kimi, modal) onto the existing message-ID keys.
+# Adds llmprovider_validate_oauth_creds_invalid for the OAuth-
+# credentials-invalid validation error surfaced by claude + qwen.
 
 llmprovider_validate_api_key_required:
   other: "API key is required"
@@ -50,6 +57,9 @@ llmprovider_validate_account_id_required:
 
 llmprovider_validate_oauth_reader_required:
   other: "OAuth credential reader is required"
+
+llmprovider_validate_oauth_creds_invalid:
+  other: "valid OAuth credentials are required"
 
 llmprovider_validate_opencode_api_key_required:
   other: "OPENCODE_API_KEY is required for non-free models"
