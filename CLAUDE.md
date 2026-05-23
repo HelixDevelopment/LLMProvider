@@ -1041,3 +1041,483 @@ Before scaffolding ANY new module, package, helper, or utility, the contributor 
 
 **Cascade requirement:** This anchor (verbatim or by `§11.4.74` reference) MUST appear in every owned submodule's `CONSTITUTION.md`, `CLAUDE.md`, and `AGENTS.md`. Severity-equivalent to a process violation; duplicate implementations landed without catalogue check are release blockers.
 **Canonical authority:** constitution submodule `Constitution.md` §11.4.74 for the full mandate.
+---
+
+## §IS LLMProvider §11.4.X anchor propagation (Phase 39.IM, 2026-05-23)
+
+The 18 blocks below were missing from this file's prior revision while present in the sibling LLMOrchestrator. Cascade requirement per Constitution §11.4.X propagation gates. Byte-identical to LLMOrchestrator source. See `docs/Fixed.md` §IS.
+
+**§11.4.1 extension (Phase 33, 2026-05-05) — FAIL-bluffs equally
+forbidden.** A test that crashes for a script-internal reason
+(undefined variable under `set -u`, regex error, malformed assertion,
+missing argument) and produces a FAIL exit code is just as misleading
+as a PASS-bluff. Both let real defects ship undetected. Per parent
+[Constitution §11.4.1](../../../../docs/guides/ATMOSPHERE_CONSTITUTION.md#114-end-user-quality-guarantee--forensic-anchor-user-mandate-2026-04-28),
+every test MUST fail ONLY for genuine product defects — script-bug
+failures must be fixed at the source layer (helper library, shared
+lib, test source), not patched in individual call sites.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.2 extension (Phase 34, 2026-05-06) — Recorded-evidence
+requirement.** A test that emits PASS without captured visual or
+audio evidence of the user-visible feature actually working on the
+screen the user would see is a §11.4 PASS-bluff. Bug #13 (VK Video
+on PRIMARY display while a passing test claimed playback PASS)
+demonstrated the gap exactly. Closing it requires the recording +
+analyzer infrastructure (Bug #14 — `dual_display_record.sh` /
+`action_timeline.sh` / Go `recording-analyzer` / `helixqa-bridge`).
+Per Constitution §11.4.2 every PASS for a user-visible feature
+MUST be cross-checked by the analyzer against the dual-display
+recording + action timeline. A PASS that lacks at least one matched
+timeline event in the analyzer findings is treated as a §11.4
+PASS-bluff.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.3 extension (Phase 34, 2026-05-06) — Per-device-topology
+test dispatch.** Tests that depend on hardware topology (secondary
+HDMI present/absent, microphone present/absent, etc.) MUST detect
+topology at test entry and dispatch the topology-appropriate
+variant. A test running the wrong variant for the actual topology
+and PASSing is a §11.4 PASS-bluff. Bug #18 (Lampa+TorrServe E2E)
+demonstrated the pattern: D1 (secondary HDMI) and D2 (primary only)
+get separate test variants behind a `dumpsys display`-based
+dispatcher. Per Constitution §11.4.3 every topology-touching test
+MUST have such a dispatcher OR explicit topology gates with
+SKIP-with-reason fallback.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.4 extension (User mandate, 2026-05-06) —
+Test-interrupt-on-discovery + retest-from-clean-baseline.** A test
+cycle that continues running past a freshly discovered defect is
+itself a §11.4 PASS-bluff: it produces "all green" summaries while
+the codebase under test is known-broken at the moment those greens
+were recorded. Phase 34.S' D1 demonstrated the violation when Bug
+#26 (hard-floor probe lifecycle) and Bug #27 (analyzer FAIL-bluff
+on non-video tests) were discovered mid-cycle and the cycle was
+allowed to continue, accumulating 13+ false-positive ANALYZER FAIL
+banners. Per Constitution §11.4.4 the moment any defect is re-
+discovered, re-produced, or newly identified during a test cycle,
+the cycle MUST stop on both devices. **Then**: (1) fix at root cause
+per §11.4.1, (2) land validation/verification tests for the fix —
+pre-build gate AND on-device test AND paired meta-test mutation,
+(3) full rebuild via `scripts/build.sh` (regardless of whether the
+fix touched host script / Go binary / firmware — host-only fixes
+still get a full rebuild for retest baseline integrity),
+(4) re-flash D1 + D2, (5) repeat full `test_all_fixes.sh` from the
+beginning sequentially per §12.6, (6) end the cycle with
+`meta_test_false_positive_proof.sh` proving no gate is itself a
+bluff gate. Tests AND HelixQA Challenges are bound equally —
+Challenges that score PASS on a non-functional feature are the same
+class of defect as PASS-bluff unit tests; both must produce
+positive end-user evidence per §11.4.2 + §11.4.3.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.4 expansion (User mandate, 2026-05-06) — Systematic
+debugging + four-layer test coverage + documentation + no-bluff
+certification.** Augments the §11.4.4 base covenant with four
+non-negotiable additional requirements per the User mandate of
+2026-05-06: (a) **Systematic debugging via superpowers skills.**
+Before applying any fix, run in-depth systematic debugging using the
+available `superpowers:*` skills (debugging, root-cause analysis,
+architectural-impact). Symptom patches are forbidden. The debugging
+output MUST identify root cause at source layer, blast radius across
+related tests/features/subsystems, and the regression-protection
+seam. (b) **Four-layer test coverage per fix.** Every fix lands with
+positive evidence in **every applicable layer**: pre-build gate
+(catches at source), post-build gate (catches in assembled image —
+proves bytes landed, cf. Fix #122 APK_LIB_MAP misroute), post-flash
+on-device test (fully automated, anti-bluff per §8.1, captured-
+evidence per §11.4.2, topology-dispatched per §11.4.3, orchestrator-
+wired in `test_all_fixes.sh`), HelixQA test bank entry
+(`banks/atmosphere.yaml` + per-feature additions), HelixQA full QA
+session coverage (Challenge-driven dispatch — bank entry without
+Challenge coverage is a §11.4 PASS-bluff), and meta-test paired
+mutation. Skipping a layer because "this fix only touches X" is
+forbidden. (c) **Documentation update for every fix.** Required:
+`docs/Issues.md` → `docs/Fixed.md` migration on closure, parent
+CLAUDE.md Applied Fixes Reference row, affected user-facing guides
+(`docs/guides/*.md`), affected diagrams/flowcharts/architecture
+docs, per-version `docs/changelogs/<tag>.md` entry. Documentation
+drift after a fix is itself a §11.4 violation. (d) **No-bluff
+certification per cycle.** Before tagging: `meta_test_false_positive
+_proof.sh` returns all gates green AND every gate's paired mutation
+FAILs (no bluff gates); `docs/Issues.md` open-set is empty or every
+entry explicitly classified out-of-scope-for-this-tag with operator
+sign-off (no known issues hidden); full suite returns zero new FAILs
+on either device (no working feature regressed); every gate has a
+paired mutation; every test produces positive evidence; every
+assertion catches its own negation (no error-prone or bluff-proof
+leftover).
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.5 — Audio + video quality analysis comprehensiveness (User mandate, 2026-05-07)**
+
+**Forensic anchor — direct user mandate (verbatim, 2026-05-07):**
+
+> "We MUST HAVE still analyzing of recorded materials and comprehensive
+> validation and verification for issues we used to test! For example
+> if there is audio at all or video, if so, is it good and proper or
+> is it faulty? Does it have glitches, frame issues and other possible
+> obstructions? IMPORTANT: Make sure that all existing tests and
+> Challenges do work in anti-bluff manner — they MUST confirm that all
+> tested codebase really works as expected!"
+
+§11.4.2 mandates *captured* evidence; §11.4.5 mandates the **content**
+of that evidence be analyzed for quality, not merely for presence. A
+test that captures a 0-byte mp4 (Bug #24) and PASSes because "the
+recording file exists" is the exact PASS-bluff pattern §11.4 forbids.
+Content-quality analysis is what closes that gap.
+
+**Audio quality analysis — every audio test that PASSes MUST verify
+ALL of:** (1) **Presence** — non-trivial RMS amplitude in captured
+WAV / `/proc/asound/.../pcm*p/sub0/hw_params`. (2) **Channel count**
+— `ffprobe -show_streams` matches the test's claim (2.0 / 5.1 / 7.1).
+(3) **Sample rate + bit depth** — match the codec / pipeline under
+test. (4) **Glitch census** — XRUN / FastMixer underrun-overrun-partial
+/ AudioFlinger writeError counts above tolerance MUST classify
+explicitly (PASS within budget, WARN above, FAIL on hard limits per
+§11.4.1 SKIP-vs-FAIL decision tree). (5) **Coexistence-artifact
+census** — for tests that exercise WiFi/BT alongside audio: BT TX
+queue overflow, A2DP src underflow, coex notification storms, 2.4 GHz
+radio contention.
+
+**Video quality analysis — every video test that PASSes MUST verify
+ALL of:** (1) **Presence** — captured screen recording has non-zero
+file size AND `ffprobe -count_frames` reports decoded-frame total > 0.
+0-byte mp4 (Bug #24) is the canonical PASS-bluff and triggers §11.4.4
+STOP. (2) **Routing target** — analyzer + action-timeline confirms
+video appeared on the *intended* display (primary vs secondary HDMI;
+Bug #13 pattern). (3) **Frame health** — drop count, frame-time
+variance (jitter), freeze detection (SSIM > 0.99 for ≥ 1 s), tearing.
+(4) **Obstruction census** — Tesseract OCR scan for hostile overlays
+(`Application not responding`, `Force close`, sign-in dialog,
+geo-restriction overlay, ad break, paywall, `App is not certified`).
+(5) **Resolution + codec** — captured frame dimensions match the
+test's claim; downgrade is a PASS-bluff.
+
+**Challenges (HelixQA) are bound equally** — every Challenge that
+asserts PASS MUST run all five audio + five video layers. A Challenge
+that scores PASS without applicable analysis is the same class of
+defect as a unit test that does.
+
+**Tooling guarantee:** audio = `tinycap` + `aplay --dump-hw-params` +
+`ffprobe` + `/proc/asound` parsers (`lib/audio_validation.sh` per
+§11.2.5). Video = `screenrecord` + `ffprobe -count_frames` +
+`recording-analyzer` + Tesseract OCR (`scripts/dual_display_record.sh`
++ `cmd/recording-analyzer/` per §11.4.2.A and §11.4.2.C). Tests
+dispatched against video evidence MUST honor §11.4.4
+test-interrupt-on-discovery when the analyzer reports empty input —
+do not silently absorb that as a generic PASS-bluff banner.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.6 — No-guessing mandate (User mandate, 2026-05-08)**
+
+**Forensic anchor — direct user mandate (verbatim, 2026-05-08T18:30 MSK):**
+
+> "'LIKELY' is guessing, we MUST NOT have guessing, since it can be
+> or may not be! No bluffing and uncertainity is allowed at any cost!
+> We MUST always know exactly precisly what is happening exactly, in
+> any context, under any conditions, everywhere!"
+
+Tests, gates, status reports, closure narratives, commit messages, and
+operator-facing text MUST NOT use `likely`, `probably`, `maybe`,
+`might`, `possibly`, `presumably`, `seems`, or `appears to` when
+describing causes of failures, behaviour, or fix effectiveness. Either
+prove the cause with captured forensic evidence (logcat, dmesg, /sys
+readings, getprop, kernel ramoops, dropbox, strace, etc.) and state it
+as fact, OR explicitly mark `UNCONFIRMED:` / `UNKNOWN:` /
+`PENDING_FORENSICS:` with a tracked-task ID for follow-up.
+
+Pre-build gate `CM-NO-GUESSING-MANDATE` greps recently-modified docs
++ test scripts for the forbidden vocabulary outside explicit
+`UNCONFIRMED:` / `UNKNOWN:` / `PENDING_FORENSICS:` blocks. Paired
+mutation introduces a `likely` token into a fresh status block →
+gate FAILs. Propagation gate `CM-COVENANT-114-6-PROPAGATION` enforces
+this anchor in every CLAUDE.md / AGENTS.md across parent + 10 owned
+submodules + HelixQA dependencies.
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.6.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.7 — Demotion-evidence rule (Phase 38.X+2 amendment, 2026-05-11)**
+
+A demotion from any FAIL classification (`OPEN`, `POSSIBLE PRODUCT
+DEFECT`, `FAIL`) to a lower-severity classification (`INVESTIGATED`,
+`MITIGATED`, `RESOLVED`, `WORKING-AS-INTENDED`) requires positive
+evidence captured under the **same conditions** that originally
+exposed the defect — same device, same firmware, same cycle position,
+same load profile.
+
+"I cannot reproduce in isolation" is a HYPOTHESIS, not a finding. Per
+§11.4.6 it MUST be tagged `UNCONFIRMED:` until same-conditions retest
+produces positive evidence. The expanded forbidden-vocabulary list:
+
+| Forbidden phrase | Why it bluffs |
+|---|---|
+| "isolated re-run PASSes therefore X was a flake" | Strips the very environment that exposed the defect. |
+| "runtime drift" | Label for "we don't know what changed". |
+| "intermittent" / "transient" | Label for "we don't know how to reproduce". |
+| "pending stress retest" | Defers the actual investigation indefinitely. |
+| "correlates with X" | Hypothesis presented as causation. |
+
+Pre-build gate `CM-DEMOTION-EVIDENCE-RULE` scans Issues.md / Fixed.md
+/ CONTINUATION.md for these phrases outside explicit
+`UNCONFIRMED:` / `UNATTRIBUTED:` / `PENDING_CYCLE_RETEST:` blocks.
+Propagation gate `CM-COVENANT-114-7-PROPAGATION` enforces this anchor
+in every CLAUDE.md / AGENTS.md across parent + 10 owned submodules +
+HelixQA dependencies.
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.7.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.8 — Deep-web-research-before-implementation mandate (User mandate, 2026-05-12)**
+
+Before designing a non-trivial fix, implementing a new feature, or declaring
+an architectural choice, perform deep web research to verify the chosen
+approach is informed by current state-of-the-art. Research surface:
+official documentation (Android/AOSP/Khronos/CEA-861/AES/IEEE/IETF/ITU),
+vendor technical guides (Rockchip, Sipeed, Audinate Dante, Synaptics,
+Realtek, Bluetooth SIG), open-source codebases (Linux kernel, ALSA, Bluez,
+ExoPlayer, libVLC, MPV, FFmpeg, AOSP forks), coding tutorials + technical
+articles (Stack Overflow, AOSP Code Lab, AES papers), issue trackers
+(Android bug tracker, AOSP gerrit, GitHub issues).
+
+A fix that re-invents a wheel — or reproduces a known-broken pattern —
+when the open-source community has already solved the problem is a §11.4
+violation by omission. Every non-trivial fix's commit / Issues.md / Fixed.md
+entry MUST cite at least one external source URL OR the literal "NO external
+solution found — original work".
+
+Pre-build gate `CM-RESEARCH-CITATION-PRESENT` scans new fix-direction
+blocks for the pattern. Propagation gate `CM-COVENANT-114-8-PROPAGATION`
+enforces this anchor in every CLAUDE.md / AGENTS.md across parent + 10
+owned submodules + HelixQA dependencies.
+
+Documentation continuity requirement: every fix landed under §11.4.8 also
+adds to `docs/guides/` a user-facing or developer-facing guide section
+where appropriate.
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.8.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.9 — Batch-source-fixes-before-rebuild mandate (User mandate, 2026-05-12)**
+
+When closing a multi-defect batch, all source-side fixes that DO NOT require
+runtime on-device validation to design MUST be landed BEFORE the next firmware
+rebuild. Anti-pattern eliminated: `Fix A → rebuild → flash → cycle → fix B → rebuild → ...`
+serializes 7-8 hours per fix instead of batching all into ONE build cycle.
+Operator time is the scarce resource.
+
+Exceptions documented in commit message as `REQUIRES_REBUILD: <reason>`:
+kernel-5.10/ changes, atmosphere-*.sh boot-script side-effects, hardware/rockchip/
+HAL behavior — each gates downstream state and requires firmware to validate.
+
+Before declaring a batch "ready for rebuild": pre-build GREEN + meta-test GREEN +
+existing-device validations performed where possible + Issues.md/Fixed.md/CONTINUATION.md
+in sync (+ HTML/PDF exported) + §11.4.8 research citations all logged.
+
+Propagation gate `CM-COVENANT-114-9-PROPAGATION` enforces this anchor in every
+CLAUDE.md / AGENTS.md across parent + 10 owned submodules + HelixQA dependencies.
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.9.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.10 — Credentials-handling mandate (User mandate, 2026-05-12)**
+
+All credentials, secrets, API tokens, passwords, phone numbers, OAuth tokens,
+signing keys MUST NEVER live in tracked files. Templates with placeholder values
+are allowed (`.example` suffix). Tests load credentials at runtime from
+`scripts/testing/secrets/` (or per-submodule equivalent); operator-populated
+files are `chmod 600`, directory is `chmod 700`. `.env`, `.env.*`, `*.env`
+patterns + `scripts/testing/secrets/*` (with `.example` + `README.md` exception)
+git-ignored project-wide.
+
+Test scripts MUST NEVER echo credentials to stdout/stderr/logcat. Screen-
+recording of sign-in flows MUST redact credential-bearing frames. Per-service
+file separation (`.netflix.env`, `.disney.env`, etc.) limits blast radius.
+
+Forensic-rotation policy: suspected leak → rotate at provider, update local
+`.env`, audit captured artifacts. Pre-build gate `CM-CREDENTIAL-LEAK-SCAN`
+greps tracked files for entropy-suspicious password strings + known API-token
+formats. Propagation gate `CM-COVENANT-114-10-PROPAGATION` enforces this
+anchor in every CLAUDE.md / AGENTS.md across parent + 10 owned submodules +
+HelixQA dependencies.
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.10.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.13 — Out-of-band sink-side captured-evidence mandate (User mandate, 2026-05-13)**
+
+Whenever an HDMI sink with a network-accessible introspection API is
+present (current example: Arvus H2-4D-273 at `http://192.168.4.185/`),
+the test suite MUST consume the sink's report as captured-evidence for
+every audio test asserting a codec / channel-count / passthrough mode.
+On-SoC HAL telemetry ALONE is insufficient — that is the exact "tests
+pass but the feature doesn't work" pattern §11.4 forbids. Reference:
+`scripts/testing/lib/arvus_probe.sh`, `scripts/testing/arvus_probe.sh`,
+`docs/guides/ARVUS_HDMI_INTEGRATION.md`. Pre-build gate
+`CM-ARVUS-EVIDENCE-INTEGRATED` (7 invariants) + paired mutation. No
+hardcoding (env: `ARVUS_HOST` etc.). Topology dispatch per §11.4.3 —
+sink unreachable → SKIP, never FAIL. Identity verification (MAC match)
+before consuming codec-state. Anti-stickiness post-stop. HelixQA
+Challenges bound equally.
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.13. Integration reference: `docs/guides/ARVUS_HDMI_INTEGRATION.md`.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.14 — Test playback cleanup mandate (User mandate, 2026-05-13)**
+
+Every test that issues `am start` / `cmd media_session play` /
+`MediaController.play` MUST issue matching `am force-stop` /
+`input keyevent KEYCODE_MEDIA_STOP` + register cleanup in `EXIT` trap.
+Verified via positive evidence (Arvus codec-state → `N.E.`,
+`dumpsys media_session` shows no PLAYING for test app).
+`test_all_fixes.sh` post-test sanity check FAILs the just-completed
+test if it left orphan playback. HelixQA Challenges bound equally.
+No grace period — "next test will clean it up" is §11.4 PASS-bluff.
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.14. Pre-build gates `CM-TEST-PLAYBACK-CLEANUP` +
+`CM-COVENANT-114-14-PROPAGATION`.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.15 — Item-status tracking mandate (User mandate, 2026-05-13)**
+
+Every active item in `docs/Issues.md` carries a `**Status:**` line with one of six values: `Queued`, `In progress`, `Ready for testing`, `In testing`, `Reopened`, `Fixed (→ Fixed.md)`. Status MUST be updated as the item progresses through its lifecycle. `Fixed` requires captured-evidence per §11.4.5 + migration to Fixed.md.
+
+The auto-generated `docs/Issues_Summary.md` includes the Status column. All three file types (`.md`, `.html`, `.pdf`) MUST be in sync at all times — enforced by `CM-DOCS-EXPORT-SYNC` (§11.4.12 + §11.4.15 amendment).
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.15. Pre-build gates `CM-ITEM-STATUS-TRACKING` + `CM-COVENANT-114-15-PROPAGATION`.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.16 — Item-type tracking mandate (User mandate, 2026-05-14)**
+
+Every active item in `docs/Issues.md` carries a `**Type:**` line with one of three values: `Bug` (product defect / regression / user-visible broken behaviour), `Feature` (new capability not previously offered to end users), `Task` (internal workstream — refactor, doc, infra, gate, audit; the lowest-stakes default when ambiguous). The vocabulary is CLOSED — no other value is permitted.
+
+The auto-generated `docs/Issues_Summary.md` includes the Type column. All three file types (`.md`, `.html`, `.pdf`) MUST be in sync at all times — enforced by `CM-DOCS-EXPORT-SYNC` (§11.4.12 + §11.4.15 + §11.4.16 amendment).
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§11.4.16. Pre-build gates `CM-ITEM-TYPE-TRACKING` + `CM-COVENANT-114-16-PROPAGATION`.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.40 — Full-suite retest before release tag mandate (User mandate, 2026-05-17)**
+
+A release tag MUST NOT be created until a COMPLETE retest with ALL existing tests has been executed on a clean baseline AFTER every workable item in the batch is done, fixed, polished, and individually verified. Spot-check retests that run only the tests touched by the batch are FORBIDDEN — they miss interaction defects between the batch's fixes and previously-stable code.
+
+The complete retest comprises: (1) pre-build full sweep, (2) post-build full sweep, (3) on-device 4-phase cycle on EVERY owned device, (4) meta-test full mutation sweep, (5) Challenge bank full sweep, (6) Issues.md/Fixed.md state audit, (7) CONTINUATION.md sync check.
+
+Time is essential — complete retest is typically 12–48 hour elapsed effort. NOT optional, NOT abbreviated. Skipping is the exact "tests passed but feature broken" failure mode §11.4 specifically prohibits.
+
+Composes with §11.4.4 (per-fix retest) — §11.4.37 is the additional final integrity check at RELEASE granularity. Composes with §11.4.7 — full-suite retest is the authoritative baseline for closures in the batch. No escape hatch — no `--skip-full-retest` or `--quick-release` flag exists.
+
+Pre-build gate `CM-FULL-SUITE-RETEST-MANDATE` + paired mutation. Propagation gate `CM-COVENANT-114-40-PROPAGATION` enforces this anchor in every CLAUDE.md/AGENTS.md across parent + 10 owned submodules + HelixQA dependencies.
+
+**Canonical authority:** constitution submodule [`Constitution.md`](../../../constitution/Constitution.md) §11.4.37.
+
+Non-compliance is a release blocker regardless of context.
+
+**§11.4.41 — Pre-Force-Push Merge-First Mandate (User mandate, 2026-05-17)**
+
+Any force-push (`git push --force`, `git push --force-with-lease`, `git push +<ref>`, or equivalent history-rewriting operation on any remote) authorised under §9.2 / CONST-043 MUST be preceded by a mechanical 4-step merge-first pipeline that brings every remote-side commit into the local tree, resolves every conflict carefully, and verifies nothing is lost or corrupted on EITHER side BEFORE the overwriting push is executed.
+
+**The 4-step pipeline (mandatory, in order):** (1) `git fetch --all --prune --tags` against every configured remote — capture output. (2) Integrate every divergent commit locally via `git rebase` (local is strict superset), `git merge` (independent additions both deserve preservation), or operator-confirmed cherry-pick (remote subset already present locally). (3) Audit: no conflict markers (`grep -rn '^<<<<<<< \|^=======$\|^>>>>>>> '` returns empty), no silent file drops (`git diff --stat HEAD@{1} HEAD`), every previously-passing test still passes per §11.4.4 / §11.4.40 baseline, every captured-evidence artifact still validates. (4) `git push --force-with-lease <remote> <ref>` (NEVER `--force` without `--with-lease` unless §9.2 sub-clause 6 explicitly authorises it for a remote where lease semantics are unavailable). One force-push event per CONST-043 authorisation — no batch authorisation.
+
+**Two-gate composition with CONST-043** — §11.4.41 does NOT relax CONST-043's operator-approval requirement. Gate A (CONST-043): operator types explicit per-operation force-push authorisation. Gate B (§11.4.41): agent executes the 4-step merge-first pipeline, captures evidence of clean integration, presents evidence to operator BEFORE the force-push. Both gates required.
+
+**Verification artefact** — every §11.4.41-governed force-push emits a `docs/changelogs/<tag>.md` "Force-push merge-first audit" section containing 7 elements: (i) `git fetch` output, (ii) per-remote `HEAD..<remote>/<branch>` log before integration, (iii) integration strategy chosen per remote with rationale, (iv) post-integration conflict-marker scan output (must be empty), (v) post-integration test suite delta (must show only expected changes), (vi) `--force-with-lease` push output with lease SHA evidence, (vii) CONST-043 authorisation quote from the conversation.
+
+Composes with §9.2 (data-safety hardlinked backup), §11.4.4 (test-interrupt-on-discovery — broken integration triggers rollback), §11.4.6 (no-guessing — every step's outcome captured, not assumed), §11.4.26 (constitution-submodule update pipeline — per-submodule specialisation), §11.4.32 (post-pull validation — audit step's mechanical companion), §11.4.37 (fetch-before-edit — step 1 enforces it for force-push specifically), §11.4.40 (full-suite retest — step 3's test-evidence requirement).
+
+No escape hatch — the operator-pressure escape ("just force-push, we'll fix it later") is the exact failure mode this anchor closes. Pre-build gate `CM-COVENANT-114-41-PROPAGATION` enforces this anchor in every CLAUDE.md/AGENTS.md across parent + 10 owned submodules + nested submodules + HelixQA dependencies. Paired mutation strips the anchor literal → gate FAILs. Gate `CM-FORCE-PUSH-MERGE-FIRST` walks `docs/changelogs/<tag>.md` "Force-push" entries for the 7 audit elements; paired mutation strips any element and asserts gate FAILs.
+
+**Canonical authority:** constitution submodule `Constitution.md` §11.4.41.
+
+Non-compliance is a release blocker regardless of context.
+
+## MANDATORY §12.6 MEMORY-BUDGET CEILING — 60% MAXIMUM (User mandate, 2026-04-30)
+
+**Forensic anchor — direct user mandate (verbatim):**
+
+> "We had to restart this session 3rd time in a row! The system of
+> the host stays with no RAM memory for some reason! First make sure
+> that whatever we do through our procedures related to this project
+> MUST NOT use more than 60% of total system memory! All processes
+> MUST be able to function normally!"
+
+**The mandate.** Project procedures MUST NOT use more than **60%
+of total system RAM** (`HOST_SAFETY_MAX_MEM_PCT`). The remaining
+40% is reserved for the operator's other workloads so the host can
+keep serving them while project work proceeds.
+
+**Three consecutive session-loss SIGKILLs on 2026-04-30** during
+1.1.5-dev — every one happened while `scripts/build.sh` was running
+`m -j5` AOSP. Each Soong/Ninja job peaks at ~5–8 GiB RSS;
+collective RSS overran the 60% envelope and the kernel OOM-killer
+escalated, taking down `user@1000.service`. **§12.1's pre-flight
+check (refusing to start if host already distressed) was not enough**
+— the missing piece was an active CONSTRAINT on heavy work itself.
+
+**Mandatory protections (rock-solid):**
+
+1. `HOST_SAFETY_MAX_MEM_PCT` defaults to 60 in
+   `scripts/lib/host_session_safety.sh`.
+2. `HOST_SAFETY_BUDGET_GB` is computed at source-time from
+   `MemTotal × MAX_PCT/100`.
+3. `bounded_run` clamps `MemoryMax` down to the budget if the
+   caller asks for more (cgroup-level enforcement via
+   `systemd-run --user --scope -p MemoryMax=…`).
+4. `host_safe_parallel_jobs` and `host_safe_build_jobs` return
+   the safe `-j` count given an estimated per-job RSS, capped at
+   `nproc`.
+5. `scripts/build.sh` wraps `m -j` in `bounded_run`. If the
+   build's collective RSS exceeds the budget, only the scope is
+   OOM-killed; `user@<uid>.service` stays alive.
+
+**Captured-evidence enforcement.** Pre-build gate
+`CM-MEMBUDGET-METATEST` locks all 7 invariants and fires every
+pre-build run.
+
+**No escape hatch.** §12.6 has NO operator-facing override flag.
+The cap exists for the operator's own protection; bypassing it is
+the bluff the §11.4 covenant specifically prohibits. Operators who
+need more headroom should reduce parallelism, close other
+workloads, or add RAM — NOT raise the percentage.
+
+**Canonical authority:** parent
+[`docs/guides/ATMOSPHERE_CONSTITUTION.md`](../../docs/guides/ATMOSPHERE_CONSTITUTION.md)
+§12.6.
+
+Non-compliance is a release blocker regardless of context.
+*Remember: Your code will be used by real people. Write code that actually works.*
+
