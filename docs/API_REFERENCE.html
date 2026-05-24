@@ -6,235 +6,232 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>API_REFERENCE</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
-    html {
-      color: #1a1a1a;
-      background-color: #fdfdfd;
-    }
-    body {
-      margin: 0 auto;
-      max-width: 36em;
-      padding-left: 50px;
-      padding-right: 50px;
-      padding-top: 50px;
-      padding-bottom: 50px;
-      hyphens: auto;
-      overflow-wrap: break-word;
-      text-rendering: optimizeLegibility;
-      font-kerning: normal;
-    }
-    @media (max-width: 600px) {
-      body {
-        font-size: 0.9em;
-        padding: 12px;
-      }
-      h1 {
-        font-size: 1.8em;
-      }
-    }
-    @media print {
-      html {
-        background-color: white;
-      }
-      body {
-        background-color: transparent;
-        color: black;
-        font-size: 12pt;
-      }
-      p, h2, h3 {
-        orphans: 3;
-        widows: 3;
-      }
-      h2, h3, h4 {
-        page-break-after: avoid;
-      }
-    }
-    p {
-      margin: 1em 0;
-    }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
-    }
-    img {
-      max-width: 100%;
-    }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      margin-top: 1.4em;
-    }
-    h5, h6 {
-      font-size: 1em;
-      font-style: italic;
-    }
-    h6 {
-      font-weight: normal;
-    }
-    ol, ul {
-      padding-left: 1.7em;
-      margin-top: 1em;
-    }
-    li > ol, li > ul {
-      margin-top: 0;
-    }
-    blockquote {
-      margin: 1em 0 1em 1.7em;
-      padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
-      color: #606060;
-    }
-    code {
-      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
-      font-size: 85%;
-      margin: 0;
-      hyphens: manual;
-    }
-    pre {
-      margin: 1em 0;
-      overflow: auto;
-    }
-    pre code {
-      padding: 0;
-      overflow: visible;
-      overflow-wrap: normal;
-    }
-    .sourceCode {
-     background-color: transparent;
-     overflow: visible;
-    }
-    hr {
-      border: none;
-      border-top: 1px solid #1a1a1a;
-      height: 1px;
-      margin: 1em 0;
-    }
-    table {
-      margin: 1em 0;
-      border-collapse: collapse;
-      width: 100%;
-      overflow-x: auto;
-      display: block;
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    table caption {
-      margin-bottom: 0.75em;
-    }
-    tbody {
-      margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    th {
-      border-top: 1px solid #1a1a1a;
-      padding: 0.25em 0.5em 0.25em 0.5em;
-    }
-    td {
-      padding: 0.125em 0.5em 0.25em 0.5em;
-    }
-    header {
-      margin-bottom: 4em;
-      text-align: center;
-    }
-    #TOC li {
-      list-style: none;
-    }
-    #TOC ul {
-      padding-left: 1.3em;
-    }
-    #TOC > ul {
-      padding-left: 0;
-    }
-    #TOC a:not(:hover) {
-      text-decoration: none;
-    }
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
-    ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
-      width: 0.8em;
-      margin: 0 0.8em 0.2em -1.6em;
-      vertical-align: middle;
-    }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-  </style>
+
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+svg {
+height: auto;
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+border: none;
+border-top: 1px solid #1a1a1a;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
 </head>
 <body>
 <header id="title-block-header">
@@ -288,7 +285,7 @@ incremental responses. The channel is closed when the stream ends.</td>
 </tr>
 <tr>
 <td><code>GetCapabilities</code></td>
-<td>Returns the provider's capabilities (streaming, tools, vision,
+<td>Returns the provider&#39;s capabilities (streaming, tools, vision,
 concurrency limits, token limits).</td>
 </tr>
 <tr>
@@ -501,7 +498,7 @@ listeners reached.</td>
 <tr>
 <td><code>Unregister</code></td>
 <td><code>(providerID string)</code></td>
-<td>Removes a provider's circuit breaker.</td>
+<td>Removes a provider&#39;s circuit breaker.</td>
 </tr>
 <tr>
 <td><code>GetAllStats</code></td>
@@ -524,8 +521,7 @@ listeners reached.</td>
 <h2 id="health-monitor">Health Monitor</h2>
 <h3 id="types-1">Types</h3>
 <h4 id="healthstatus">HealthStatus</h4>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> HealthStatus <span class="dt">string</span></span>
+<div class="sourceCode" id="cb10"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> HealthStatus <span class="dt">string</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> <span class="op">(</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    HealthStatusHealthy   HealthStatus <span class="op">=</span> <span class="st">&quot;healthy&quot;</span></span>
@@ -534,8 +530,7 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    HealthStatusDegraded  HealthStatus <span class="op">=</span> <span class="st">&quot;degraded&quot;</span></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
 <h4 id="healthmonitorconfig">HealthMonitorConfig</h4>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> HealthMonitorConfig <span class="kw">struct</span> <span class="op">{</span></span>
+<div class="sourceCode" id="cb11"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> HealthMonitorConfig <span class="kw">struct</span> <span class="op">{</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    CheckInterval      time<span class="op">.</span>Duration <span class="co">// How often to run checks (default: 30s)</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    HealthyThreshold   <span class="dt">int</span>           <span class="co">// Consecutive successes to mark healthy (default: 2)</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    UnhealthyThreshold <span class="dt">int</span>           <span class="co">// Consecutive failures to mark unhealthy (default: 3)</span></span>
@@ -543,8 +538,7 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb11-1"><a href="#cb
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    Enabled            <span class="dt">bool</span>          <span class="co">// Whether monitoring is enabled (default: true)</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="providerhealth">ProviderHealth</h4>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> ProviderHealth <span class="kw">struct</span> <span class="op">{</span></span>
+<div class="sourceCode" id="cb12"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> ProviderHealth <span class="kw">struct</span> <span class="op">{</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    ProviderID       <span class="dt">string</span>        <span class="st">`json:&quot;provider_id&quot;`</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    Status           HealthStatus  <span class="st">`json:&quot;status&quot;`</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    LastCheck        time<span class="op">.</span>Time     <span class="st">`json:&quot;last_check&quot;`</span></span>
@@ -557,8 +551,7 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb12-1"><a href="#cb
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    FailureCount     <span class="dt">int64</span>         <span class="st">`json:&quot;failure_count&quot;`</span></span>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="aggregatehealth">AggregateHealth</h4>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> AggregateHealth <span class="kw">struct</span> <span class="op">{</span></span>
+<div class="sourceCode" id="cb13"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> AggregateHealth <span class="kw">struct</span> <span class="op">{</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    OverallStatus      HealthStatus            <span class="st">`json:&quot;overall_status&quot;`</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    TotalProviders     <span class="dt">int</span>                     <span class="st">`json:&quot;total_providers&quot;`</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    HealthyProviders   <span class="dt">int</span>                     <span class="st">`json:&quot;healthy_providers&quot;`</span></span>
@@ -568,11 +561,9 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb13-1"><a href="#cb
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    Providers          <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span>HealthStatus <span class="st">`json:&quot;providers&quot;`</span></span>
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="healthlistener">HealthListener</h4>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> HealthListener <span class="kw">func</span><span class="op">(</span>providerID <span class="dt">string</span><span class="op">,</span> oldStatus<span class="op">,</span> newStatus HealthStatus<span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> HealthListener <span class="kw">func</span><span class="op">(</span>providerID <span class="dt">string</span><span class="op">,</span> oldStatus<span class="op">,</span> newStatus HealthStatus<span class="op">)</span></span></code></pre></div>
 <h3 id="constructor-functions-2">Constructor Functions</h3>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> NewHealthMonitor<span class="op">(</span>config HealthMonitorConfig<span class="op">)</span> <span class="op">*</span>HealthMonitor</span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> NewHealthMonitor<span class="op">(</span>config HealthMonitorConfig<span class="op">)</span> <span class="op">*</span>HealthMonitor</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> NewDefaultHealthMonitor<span class="op">()</span> <span class="op">*</span>HealthMonitor</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> DefaultHealthMonitorConfig<span class="op">()</span> HealthMonitorConfig</span></code></pre></div>
 <h3 id="healthmonitor-methods">HealthMonitor Methods</h3>
@@ -668,8 +659,7 @@ immediately.</td>
 <h2 id="retry-logic">Retry Logic</h2>
 <h3 id="types-2">Types</h3>
 <h4 id="retryconfig">RetryConfig</h4>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> RetryConfig <span class="kw">struct</span> <span class="op">{</span></span>
+<div class="sourceCode" id="cb16"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> RetryConfig <span class="kw">struct</span> <span class="op">{</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    MaxRetries   <span class="dt">int</span>           <span class="co">// Maximum retry attempts, 0 = no retries (default: 3)</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    InitialDelay time<span class="op">.</span>Duration <span class="co">// Initial backoff delay (default: 1s)</span></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    MaxDelay     time<span class="op">.</span>Duration <span class="co">// Maximum backoff delay (default: 30s)</span></span>
@@ -677,47 +667,39 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb16-1"><a href="#cb
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    JitterFactor <span class="dt">float64</span>       <span class="co">// Jitter factor 0.0-1.0 (default: 0.1)</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="retryresult">RetryResult</h4>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> RetryResult <span class="kw">struct</span> <span class="op">{</span></span>
+<div class="sourceCode" id="cb17"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> RetryResult <span class="kw">struct</span> <span class="op">{</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    Response   <span class="op">*</span>http<span class="op">.</span>Response</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    Attempts   <span class="dt">int</span></span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    LastError  <span class="dt">error</span></span>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    TotalDelay time<span class="op">.</span>Duration</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="retryablefunc">RetryableFunc</h4>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> RetryableFunc <span class="kw">func</span><span class="op">()</span> <span class="op">(*</span>http<span class="op">.</span>Response<span class="op">,</span> <span class="dt">error</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> RetryableFunc <span class="kw">func</span><span class="op">()</span> <span class="op">(*</span>http<span class="op">.</span>Response<span class="op">,</span> <span class="dt">error</span><span class="op">)</span></span></code></pre></div>
 <h3 id="functions">Functions</h3>
 <h4 id="defaultretryconfig">DefaultRetryConfig</h4>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> DefaultRetryConfig<span class="op">()</span> RetryConfig</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> DefaultRetryConfig<span class="op">()</span> RetryConfig</span></code></pre></div>
 <p>Returns sensible defaults (3 retries, 1s initial delay, 30s max, 2.0
 multiplier, 0.1 jitter).</p>
 <h4 id="isretryablestatuscode">IsRetryableStatusCode</h4>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> IsRetryableStatusCode<span class="op">(</span>statusCode <span class="dt">int</span><span class="op">)</span> <span class="dt">bool</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> IsRetryableStatusCode<span class="op">(</span>statusCode <span class="dt">int</span><span class="op">)</span> <span class="dt">bool</span></span></code></pre></div>
 <p>Returns true for HTTP status codes 429, 500, 502, 503, 504.</p>
 <h4 id="isretryableerror">IsRetryableError</h4>
-<div class="sourceCode" id="cb21"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> IsRetryableError<span class="op">(</span>err <span class="dt">error</span><span class="op">)</span> <span class="dt">bool</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> IsRetryableError<span class="op">(</span>err <span class="dt">error</span><span class="op">)</span> <span class="dt">bool</span></span></code></pre></div>
 <p>Returns true for retryable errors (network errors). Returns false for
 <code>context.Canceled</code> and
 <code>context.DeadlineExceeded</code>.</p>
 <h4 id="executewithretry">ExecuteWithRetry</h4>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> ExecuteWithRetry<span class="op">(</span>ctx context<span class="op">.</span>Context<span class="op">,</span> config RetryConfig<span class="op">,</span> fn RetryableFunc<span class="op">)</span> <span class="op">(*</span>RetryResult<span class="op">,</span> <span class="dt">error</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> ExecuteWithRetry<span class="op">(</span>ctx context<span class="op">.</span>Context<span class="op">,</span> config RetryConfig<span class="op">,</span> fn RetryableFunc<span class="op">)</span> <span class="op">(*</span>RetryResult<span class="op">,</span> <span class="dt">error</span><span class="op">)</span></span></code></pre></div>
 <p>Executes a function with retry logic and exponential backoff with
 jitter. Respects context cancellation. Closes response bodies before
 retrying on retryable HTTP status codes.</p>
 <h4 id="calculatebackoff">CalculateBackoff</h4>
-<div class="sourceCode" id="cb23"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> CalculateBackoff<span class="op">(</span>attempt <span class="dt">int</span><span class="op">,</span> config RetryConfig<span class="op">)</span> time<span class="op">.</span>Duration</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> CalculateBackoff<span class="op">(</span>attempt <span class="dt">int</span><span class="op">,</span> config RetryConfig<span class="op">)</span> time<span class="op">.</span>Duration</span></code></pre></div>
 <p>Calculates the backoff duration for a given attempt number using
 exponential backoff with jitter.</p>
 <h3 id="retryablehttpclient">RetryableHTTPClient</h3>
 <p>Wraps <code>http.Client</code> with automatic retry logic.</p>
-<div class="sourceCode" id="cb24"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> NewRetryableHTTPClient<span class="op">(</span>client <span class="op">*</span>http<span class="op">.</span>Client<span class="op">,</span> config RetryConfig<span class="op">)</span> <span class="op">*</span>RetryableHTTPClient</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> NewRetryableHTTPClient<span class="op">(</span>client <span class="op">*</span>http<span class="op">.</span>Client<span class="op">,</span> config RetryConfig<span class="op">)</span> <span class="op">*</span>RetryableHTTPClient</span></code></pre></div>
 <table>
 <thead>
 <tr>
@@ -781,7 +763,7 @@ creation.</li>
 </table>
 <hr />
 <h2 id="nvidia-nemotron-rag-support">NVIDIA Nemotron RAG Support</h2>
-<p>HelixAgent provides comprehensive integration with NVIDIA's Nemotron
+<p>HelixAgent provides comprehensive integration with NVIDIA&#39;s Nemotron
 RAG models for document processing, multimodal understanding, and
 grounded answer generation.</p>
 <h3 id="supported-models">Supported Models</h3>
@@ -822,8 +804,7 @@ grounded answer generation.</p>
 </tbody>
 </table>
 <h3 id="provider-configuration">Provider Configuration</h3>
-<div class="sourceCode" id="cb25"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>nemotronProvider <span class="op">:=</span> <span class="op">&amp;</span>NemotronProvider<span class="op">{</span></span>
+<div class="sourceCode" id="cb25"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>nemotronProvider <span class="op">:=</span> <span class="op">&amp;</span>NemotronProvider<span class="op">{</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    BaseURL<span class="op">:</span>     <span class="st">&quot;https://integrate.api.nvidia.com/v1&quot;</span><span class="op">,</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    APIKey<span class="op">:</span>      os<span class="op">.</span>Getenv<span class="op">(</span><span class="st">&quot;NVIDIA_API_KEY&quot;</span><span class="op">),</span></span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -844,8 +825,7 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb25-1"><a href="#cb
 <span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="co">// Register with health monitoring</span></span>
 <span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>monitor<span class="op">.</span>RegisterProvider<span class="op">(</span><span class="st">&quot;nvidia-nemotron&quot;</span><span class="op">,</span> nemotronProvider<span class="op">)</span></span></code></pre></div>
 <h3 id="rag-query-with-citations">RAG Query with Citations</h3>
-<div class="sourceCode" id="cb26"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>result<span class="op">,</span> err <span class="op">:=</span> nemotronProvider<span class="op">.</span>RAGQuery<span class="op">(</span>ctx<span class="op">,</span> <span class="op">&amp;</span>RAGQueryRequest<span class="op">{</span></span>
+<div class="sourceCode" id="cb26"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>result<span class="op">,</span> err <span class="op">:=</span> nemotronProvider<span class="op">.</span>RAGQuery<span class="op">(</span>ctx<span class="op">,</span> <span class="op">&amp;</span>RAGQueryRequest<span class="op">{</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    Document<span class="op">:</span> <span class="st">&quot;financial_report.pdf&quot;</span><span class="op">,</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    Query<span class="op">:</span> <span class="st">&quot;What was Q3 revenue growth?&quot;</span><span class="op">,</span></span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    Options<span class="op">:</span> <span class="op">&amp;</span>RAGOptions<span class="op">{</span></span>
@@ -881,16 +861,14 @@ deployment</li>
 <li><strong>Storage:</strong> 250GB for models, datasets, and vector
 database</li>
 <li><strong>Python:</strong> 3.10-3.12 (for NeMo Retriever library)</li>
-<li><strong>API Key:</strong> Free access at <a
-href="https://build.nvidia.com">build.nvidia.com</a></li>
+<li><strong>API Key:</strong> Free access at <a href="https://build.nvidia.com">build.nvidia.com</a></li>
 </ul>
 <h3 id="documentation">Documentation</h3>
 <p>For complete integration guide, see:</p>
 <ul>
 <li><a href="/docs/NVIDIA_NEMOTRON_RAG_INTEGRATION.md">NVIDIA Nemotron
 RAG Integration Guide</a></li>
-<li><a
-href="https://developer.nvidia.com/blog/how-to-build-a-document-processing-pipeline-for-rag-with-nemotron/">NVIDIA
+<li><a href="https://developer.nvidia.com/blog/how-to-build-a-document-processing-pipeline-for-rag-with-nemotron/">NVIDIA
 Developer Blog: Document Processing Pipeline</a></li>
 <li><a href="https://github.com/NVIDIA/NeMo-Retriever">NeMo Retriever
 Library</a></li>
