@@ -1557,3 +1557,15 @@ Composes with §11.4 / §11.4.1 / §11.4.2 / §11.4.4 / §11.4.5 / §11.4.6 / §
 [`Constitution.md`](Constitution.md) §11.4.87.
 
 Non-compliance is a release blocker regardless of context. No escape hatch — `--idle-OK`, `--skip-endless-loop`, `--bluff-permitted-for-this-task`, `--metadata-only-test-suffices`, `--no-physical-proof-required` are FORBIDDEN flags.
+
+**§11.4.11 — File-layout discipline (User mandate, 2026-05-12)**
+
+Files live in canonical directories per type: Shell scripts → `scripts/` (legacy: `scripts/legacy/`); Log files → `logs/`; Release artifacts → `releases/<app>/<version>/`; Operator credentials → `scripts/testing/secrets/` (per §11.4.10, git-ignored); Markdown docs → `docs/` + `docs/guides/` + `docs/research/`; Per-version changelogs → `docs/changelogs/`. Project files organised by purpose, not historical accident.
+
+**Canonical authority:** constitution submodule [`Constitution.md`](../../../constitution/Constitution.md) §11.4.11. Non-compliance is a release blocker.
+
+**§11.4.12 — Issues_Summary.md sync mandate (User mandate, 2026-05-12)**
+
+`docs/Issues_Summary.md` is the canonical short-form summary of all open items. MUST be regenerated + re-exported (HTML + PDF) whenever Issues.md changes. Generator: `scripts/testing/generate_issues_summary.sh`. Pre-build gates `CM-ISSUES-SUMMARY-SYNC` + `CM-COVENANT-114-12-PROPAGATION` enforce mechanically. Composes with §11.4.15 / §11.4.16 / §11.4.19 / §11.4.23.
+
+**Canonical authority:** constitution submodule [`Constitution.md`](../../../constitution/Constitution.md) §11.4.12. Non-compliance is a release blocker.
