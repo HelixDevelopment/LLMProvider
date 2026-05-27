@@ -2662,5 +2662,27 @@ hatch — <code>--idle-OK</code>, <code>--skip-endless-loop</code>,
 <code>--bluff-permitted-for-this-task</code>,
 <code>--metadata-only-test-suffices</code>,
 <code>--no-physical-proof-required</code> are FORBIDDEN flags.</p>
+<p><strong>§11.4.11 — File-layout discipline (User mandate,
+2026-05-12)</strong></p>
+<p>Files live in canonical directories per type: Shell scripts →
+<code>scripts/</code>; Log files → <code>logs/</code>; Release artifacts
+→ <code>releases/&lt;app&gt;/&lt;version&gt;/</code>; Operator
+credentials → <code>scripts/testing/secrets/</code> (per §11.4.10,
+git-ignored); Markdown docs → <code>docs/</code> +
+<code>docs/guides/</code> + <code>docs/research/</code>; Per-version
+changelogs → <code>docs/changelogs/</code>. Project files organised by
+purpose, not historical accident.</p>
+<p><strong>Canonical authority:</strong> constitution submodule <a href="../../../constitution/Constitution.md"><code>Constitution.md</code></a>
+§11.4.11. Non-compliance is a release blocker.</p>
+<p><strong>§11.4.12 — Issues_Summary.md sync mandate (User mandate,
+2026-05-12)</strong></p>
+<p><code>docs/Issues_Summary.md</code> is the canonical short-form
+summary of all open items. MUST be regenerated + re-exported (HTML +
+PDF) whenever Issues.md changes. Generator:
+<code>scripts/testing/generate_issues_summary.sh</code>. Pre-build gates
+<code>CM-ISSUES-SUMMARY-SYNC</code> +
+<code>CM-COVENANT-114-12-PROPAGATION</code> enforce mechanically.</p>
+<p><strong>Canonical authority:</strong> constitution submodule <a href="../../../constitution/Constitution.md"><code>Constitution.md</code></a>
+§11.4.12. Non-compliance is a release blocker.</p>
 </body>
 </html>
