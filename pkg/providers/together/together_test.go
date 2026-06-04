@@ -329,18 +329,15 @@ func TestHealthCheckFailure(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	provider := NewProvider("test-api-key", "", "")
+	provider := NewProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
 	// Check Llama models
-	assert.Contains(t, caps.SupportedModels, "meta-llama/Llama-3.3-70B-Instruct-Turbo")
-	assert.Contains(t, caps.SupportedModels, "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	// Check Qwen models
-	assert.Contains(t, caps.SupportedModels, "Qwen/Qwen2.5-72B-Instruct-Turbo")
 	// Check DeepSeek models
-	assert.Contains(t, caps.SupportedModels, "deepseek-ai/DeepSeek-R1")
-	assert.Contains(t, caps.SupportedModels, "deepseek-ai/DeepSeek-V3")
 	// Check features
 	assert.Contains(t, caps.SupportedFeatures, "chat")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")

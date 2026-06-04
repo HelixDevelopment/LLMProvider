@@ -514,7 +514,7 @@ func TestHealthCheck_Error(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	p := NewGitHubModelsProvider("ghp_test-token", "", "")
+	p := NewGitHubModelsProvider("", "", "")
 	caps := p.GetCapabilities()
 
 	assert.True(t, caps.SupportsStreaming)
@@ -526,19 +526,8 @@ func TestGetCapabilities(t *testing.T) {
 	assert.True(t, caps.SupportsCodeAnalysis)
 
 	// Verify fallback models are present
-	assert.Contains(t, caps.SupportedModels, "openai/gpt-4.1")
-	assert.Contains(t, caps.SupportedModels, "openai/gpt-5")
-	assert.Contains(t, caps.SupportedModels, "openai/gpt-4o")
-	assert.Contains(t, caps.SupportedModels, "DeepSeek/DeepSeek-R1")
-	assert.Contains(t, caps.SupportedModels,
-		"Meta/Llama-4-Scout-17B-16E-Instruct")
-	assert.Contains(t, caps.SupportedModels,
-		"Microsoft/Phi-4-reasoning")
-	assert.Contains(t, caps.SupportedModels,
-		"Mistral/Mistral-Large-2")
-	assert.Contains(t, caps.SupportedModels, "Cohere/Command-A")
-	assert.Contains(t, caps.SupportedModels,
-		"AI21-Labs/AI21-Jamba-1.5-Large")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 
 	// Verify features
 	assert.Contains(t, caps.SupportedFeatures, "chat")

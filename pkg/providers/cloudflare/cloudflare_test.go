@@ -160,11 +160,12 @@ func TestCompleteStream(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	provider := NewCloudflareProvider("test-key", "test-account", "", "")
+	provider := NewCloudflareProvider("", "test-account", "", "")
 	caps := provider.GetCapabilities()
 
 	assert.NotNil(t, caps)
-	assert.Contains(t, caps.SupportedModels, CloudflareModel)
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "text_completion")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
 	assert.True(t, caps.SupportsStreaming)

@@ -286,17 +286,15 @@ func TestCompleteStreamError(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	provider := NewProvider("test-api-key", "", "")
+	provider := NewProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
 	// Check Llama models
-	assert.Contains(t, caps.SupportedModels, "accounts/fireworks/models/llama-v3p1-405b-instruct")
-	assert.Contains(t, caps.SupportedModels, "accounts/fireworks/models/llama-v3p1-70b-instruct")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	// Check DeepSeek models
-	assert.Contains(t, caps.SupportedModels, "accounts/fireworks/models/deepseek-r1")
 	// Check function calling model
-	assert.Contains(t, caps.SupportedModels, "accounts/fireworks/models/firefunction-v2")
 	// Check features
 	assert.Contains(t, caps.SupportedFeatures, "chat")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")

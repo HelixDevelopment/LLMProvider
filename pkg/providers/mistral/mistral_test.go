@@ -160,13 +160,13 @@ func TestMistralProvider_CalculateConfidence(t *testing.T) {
 }
 
 func TestMistralProvider_GetCapabilities(t *testing.T) {
-	provider := NewMistralProvider("key", "", "")
+	provider := NewMistralProvider("", "", "")
 
 	caps := provider.GetCapabilities()
 
 	assert.NotNil(t, caps)
-	assert.Contains(t, caps.SupportedModels, "mistral-large-latest")
-	assert.Contains(t, caps.SupportedModels, "codestral-latest")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "function_calling")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
 	assert.True(t, caps.SupportsStreaming)

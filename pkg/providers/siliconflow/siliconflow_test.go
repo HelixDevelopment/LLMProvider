@@ -141,11 +141,12 @@ func TestCompleteStream(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	provider := NewSiliconFlowProvider("test-key", "", "")
+	provider := NewSiliconFlowProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	assert.NotNil(t, caps)
-	assert.NotEmpty(t, caps.SupportedModels)
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "text_completion")
 	assert.True(t, caps.SupportsStreaming)
 	assert.Equal(t, 8192, caps.Limits.MaxTokens)

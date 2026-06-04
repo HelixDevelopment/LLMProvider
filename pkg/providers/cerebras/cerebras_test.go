@@ -128,12 +128,13 @@ func TestCerebrasProvider_CalculateConfidence(t *testing.T) {
 }
 
 func TestCerebrasProvider_GetCapabilities(t *testing.T) {
-	provider := NewCerebrasProvider("key", "", "")
+	provider := NewCerebrasProvider("", "", "")
 
 	caps := provider.GetCapabilities()
 
 	assert.NotNil(t, caps)
-	assert.Contains(t, caps.SupportedModels, "llama3.1-8b")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
 	assert.True(t, caps.SupportsStreaming)
 	assert.False(t, caps.SupportsFunctionCalling)

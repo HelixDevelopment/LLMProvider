@@ -268,14 +268,14 @@ func TestDeepSeekProvider_CompleteStream(t *testing.T) {
 }
 
 func TestDeepSeekProvider_GetCapabilities(t *testing.T) {
-	provider := NewDeepSeekProvider("test-key", "", "")
+	provider := NewDeepSeekProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
 
 	// Check supported models
-	assert.Contains(t, caps.SupportedModels, "deepseek-coder")
-	assert.Contains(t, caps.SupportedModels, "deepseek-chat")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 
 	// Check supported features
 	assert.Contains(t, caps.SupportedFeatures, "text_completion")

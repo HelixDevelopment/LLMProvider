@@ -239,13 +239,12 @@ func TestCompleteStreamError(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	provider := NewProvider("test-api-key", "", "")
+	provider := NewProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
-	assert.Contains(t, caps.SupportedModels, "claude-sonnet-4-20250514")
-	assert.Contains(t, caps.SupportedModels, "claude-opus-4-5-20251101")
-	assert.Contains(t, caps.SupportedModels, "claude-3-5-sonnet-20241022")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "chat")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
 	assert.Contains(t, caps.SupportedFeatures, "tools")

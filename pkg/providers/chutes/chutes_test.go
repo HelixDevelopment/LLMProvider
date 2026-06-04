@@ -292,12 +292,12 @@ func TestHealthCheckFailure(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	provider := NewProvider("test-api-key", "", "")
+	provider := NewProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
-	assert.Contains(t, caps.SupportedModels, "deepseek-ai/DeepSeek-V3")
-	assert.Contains(t, caps.SupportedModels, "deepseek-ai/DeepSeek-R1")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "chat")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
 	assert.Contains(t, caps.SupportedFeatures, "tools")

@@ -271,7 +271,7 @@ func TestProvider_HealthCheck(t *testing.T) {
 }
 
 func TestProvider_GetCapabilities(t *testing.T) {
-	p := NewProvider("test-key", "", "")
+	p := NewProvider("", "", "")
 	caps := p.GetCapabilities()
 
 	assert.True(t, caps.SupportsStreaming)
@@ -279,8 +279,8 @@ func TestProvider_GetCapabilities(t *testing.T) {
 	assert.True(t, caps.SupportsVision)
 	assert.True(t, caps.SupportsFunctionCalling)
 	assert.True(t, caps.SupportsReasoning)
-	assert.Contains(t, caps.SupportedModels, "gpt-4o")
-	assert.Contains(t, caps.SupportedModels, "o1")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
 	assert.Contains(t, caps.SupportedFeatures, "tools")
 	assert.Equal(t, 128000, caps.Limits.MaxTokens)

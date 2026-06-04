@@ -428,12 +428,43 @@ func TestZAIProvider_HealthCheck_NetworkError(t *testing.T) {
 	assert.Contains(t, err.Error(), "health check request failed")
 }
 
+// newZAIModelsServer returns an httptest server speaking the ZAI/Zhipu
+// OpenAI-compatible /models response, so discovery is exercised hermetically
+// (no live network dependency — §11.4.50 determinism, §11.4.98 self-driving).
+func newZAIModelsServer(t *testing.T, modelIDs ...string) *httptest.Server {
+	t.Helper()
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		type m struct {
+			ID string `json:"id"`
+		}
+		data := make([]m, 0, len(modelIDs))
+		for _, id := range modelIDs {
+			data = append(data, m{ID: id})
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"data": data})
+	}))
+}
+
 func TestZAIProvider_GetCapabilities(t *testing.T) {
-	provider := NewZAIProvider("", "", "")
+	// Offline contract: with NO live API reachable (empty key/URL), discovery
+	// returns nil per CONST-036 — SupportedModels MUST NOT carry a hardcoded
+	// catalogue. The static capability fields remain fully populated.
+	offline := NewZAIProvider("", "", "")
+	offCaps := offline.GetCapabilities()
+	require.NotNil(t, offCaps)
+	assert.Empty(t, offCaps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
+
+	// Live-wiring contract: pointed at a real (local) /models endpoint with a
+	// key, discovery surfaces exactly the models the endpoint reports.
+	server := newZAIModelsServer(t, "glm-4-plus", "glm-4", "glm-4-flash")
+	defer server.Close()
+	provider := NewZAIProvider("test-key", server.URL, "")
 	caps := provider.GetCapabilities()
 
 	assert.NotNil(t, caps)
-	// GLM-4 series models
+	// GLM-4 series models — discovered live from the local endpoint.
 	assert.Contains(t, caps.SupportedModels, "glm-4-plus")
 	assert.Contains(t, caps.SupportedModels, "glm-4")
 	assert.Contains(t, caps.SupportedModels, "glm-4-flash")
@@ -975,9 +1006,6 @@ func TestZAIProvider_ZhipuErrorCodes(t *testing.T) {
 }
 
 func TestZAIProvider_CurrentGLMModels(t *testing.T) {
-	provider := NewZAIProvider("", "", "")
-	caps := provider.GetCapabilities()
-
 	currentModels := []string{
 		"glm-5",
 		"glm-4.7",
@@ -985,6 +1013,14 @@ func TestZAIProvider_CurrentGLMModels(t *testing.T) {
 		"glm-4.5",
 		"glm-4.5-air",
 	}
+
+	// Discovery is wired through the real ZAI response parser against a local
+	// endpoint reporting the current GLM line-up — proving the live discovery
+	// path surfaces them (not a hardcoded list, per CONST-036).
+	server := newZAIModelsServer(t, currentModels...)
+	defer server.Close()
+	provider := NewZAIProvider("test-key", server.URL, "")
+	caps := provider.GetCapabilities()
 
 	for _, model := range currentModels {
 		assert.Contains(t, caps.SupportedModels, model, "Expected %s to be in supported models", model)

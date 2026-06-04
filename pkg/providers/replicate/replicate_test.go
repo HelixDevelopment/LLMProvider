@@ -197,12 +197,12 @@ func TestHealthCheck(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	provider := NewProvider("test-api-key", "", "")
+	provider := NewProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
-	assert.Contains(t, caps.SupportedModels, "meta/llama-2-70b-chat")
-	assert.Contains(t, caps.SupportedModels, "meta/meta-llama-3-70b-instruct")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "chat")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
 	assert.Contains(t, caps.SupportedFeatures, "image_generation")

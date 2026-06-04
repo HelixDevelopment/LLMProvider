@@ -696,12 +696,12 @@ func TestGeminiAPIProvider_ValidateConfig(t *testing.T) {
 }
 
 func TestGeminiAPIProvider_GetCapabilities(t *testing.T) {
-	provider := NewGeminiAPIProvider("test-key", "", "")
+	provider := NewGeminiAPIProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
-	assert.Contains(t, caps.SupportedModels, "gemini-2.5-flash")
-	assert.Contains(t, caps.SupportedModels, "gemini-2.5-pro")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 
 	assert.True(t, caps.SupportsStreaming)
 	assert.True(t, caps.SupportsFunctionCalling)

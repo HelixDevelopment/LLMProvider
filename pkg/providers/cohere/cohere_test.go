@@ -297,12 +297,12 @@ func TestHealthCheckFailure(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	provider := NewProvider("test-api-key", "", "")
+	provider := NewProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
-	assert.Contains(t, caps.SupportedModels, "command-a-03-2025")
-	assert.Contains(t, caps.SupportedModels, "command-r7b-12-2024")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "chat")
 	assert.Contains(t, caps.SupportedFeatures, "streaming")
 	assert.Contains(t, caps.SupportedFeatures, "tools")

@@ -258,7 +258,7 @@ func TestProvider_HealthCheck(t *testing.T) {
 }
 
 func TestProvider_GetCapabilities(t *testing.T) {
-	p := NewProvider("gsk_test-key", "", "")
+	p := NewProvider("", "", "")
 	caps := p.GetCapabilities()
 
 	assert.True(t, caps.SupportsStreaming)
@@ -267,9 +267,8 @@ func TestProvider_GetCapabilities(t *testing.T) {
 	assert.True(t, caps.SupportsFunctionCalling)
 	assert.True(t, caps.SupportsReasoning)
 	assert.True(t, caps.SupportsCodeCompletion)
-	assert.Contains(t, caps.SupportedModels, "llama-3.3-70b-versatile")
-	assert.Contains(t, caps.SupportedModels, "mixtral-8x7b-32768")
-	assert.Contains(t, caps.SupportedModels, "whisper-large-v3")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "fast_inference")
 	assert.Contains(t, caps.SupportedFeatures, "audio_transcription")
 	assert.Equal(t, 131072, caps.Limits.MaxTokens)

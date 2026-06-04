@@ -226,7 +226,15 @@ func (d *Discoverer) InvalidateCache() {
 func (d *Discoverer) cacheModels(models []string, tier int) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	d.models = models
+	// Store an INTERNAL copy so the cached slice never shares a backing array
+	// with the slice returned to a caller. Without this, a caller that mutates
+	// the slice returned by DiscoverModels() on the cache-miss path would (a)
+	// corrupt the internal cache and (b) race with a concurrent GetCachedModels()
+	// reader — the cache-hit path already returns a defensive copy, so this makes
+	// the copy-on-return contract hold on EVERY path symmetrically.
+	cached := make([]string, len(models))
+	copy(cached, models)
+	d.models = cached
 	d.discoveredAt = time.Now()
 	d.tier = tier
 }

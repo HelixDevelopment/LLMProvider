@@ -567,6 +567,102 @@ func TestDiscoverModels_ConcurrentAccess(t *testing.T) {
 	}
 }
 
+// TestDiscoverModels_ConcurrentMixedReadWrite stresses the RWMutex with a
+// realistic concurrent mix that the prior cache-hit-only concurrency test did
+// not cover: simultaneous DiscoverModels() (write path on cache miss / read
+// path on cache hit), GetCachedModels() (pure read), InvalidateCache() (write),
+// and GetDiscoveryTier() (read) against the SAME Discoverer. Run under -race
+// it proves no data race exists across the read/write boundary, and that every
+// returned slice is an independent copy callers can safely mutate (a shared
+// backing array would surface here as a race or corrupted assertion).
+func TestDiscoverModels_ConcurrentMixedReadWrite(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		resp := openAIModelsResponse{
+			Data: []openAIModel{{ID: "model-a"}, {ID: "model-b"}, {ID: "model-c"}},
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(resp)
+	}))
+	defer server.Close()
+
+	d := NewDiscoverer(ProviderConfig{
+		ProviderName:   "concurrent",
+		ModelsEndpoint: server.URL,
+		APIKey:         "test-key",
+		CacheTTL:       1 * time.Millisecond, // force frequent re-discovery (write path)
+	})
+
+	const workers = 16
+	const iterations = 50
+	done := make(chan struct{}, workers)
+
+	for w := 0; w < workers; w++ {
+		go func(id int) {
+			defer func() { done <- struct{}{} }()
+			for i := 0; i < iterations; i++ {
+				switch (id + i) % 4 {
+				case 0:
+					models := d.DiscoverModels()
+					// Mutating the returned slice must not affect internal state
+					// (defensive copy contract). If it shared the backing array,
+					// -race would flag a concurrent read/write here.
+					if len(models) > 0 {
+						models[0] = "MUTATED-BY-CALLER"
+					}
+				case 1:
+					_ = d.GetCachedModels()
+				case 2:
+					_ = d.GetDiscoveryTier()
+				case 3:
+					d.InvalidateCache()
+				}
+			}
+		}(w)
+	}
+
+	for w := 0; w < workers; w++ {
+		<-done
+	}
+
+	// After the storm, a fresh discovery must still return the canonical,
+	// uncorrupted catalogue — proving caller mutation never leaked inward.
+	d.InvalidateCache()
+	final := d.DiscoverModels()
+	assert.ElementsMatch(t, []string{"model-a", "model-b", "model-c"}, final,
+		"internal model cache must be immune to caller mutation of returned slices")
+}
+
+// TestDiscoverModels_ConcurrentNilPath proves the CONST-036 nil-return path is
+// race-clean under concurrent access. With no API key, Tier 1 is skipped and
+// every concurrent caller must observe nil (never a partially-written cache,
+// never a hardcoded fallback), with no data race on the shared fields.
+func TestDiscoverModels_ConcurrentNilPath(t *testing.T) {
+	d := NewDiscoverer(ProviderConfig{
+		ProviderName:   "offline",
+		ModelsEndpoint: "https://unreachable.invalid/v1/models",
+		APIKey:         "", // empty key → Tier 1 skipped → deterministic nil, no network
+		FallbackModels: []string{"must-not-appear-1", "must-not-appear-2"},
+	})
+
+	const workers = 16
+	done := make(chan struct{}, workers)
+	for w := 0; w < workers; w++ {
+		go func() {
+			defer func() { done <- struct{}{} }()
+			for i := 0; i < 50; i++ {
+				assert.Nil(t, d.DiscoverModels(),
+					"offline discovery must return nil, never hardcoded fallback (CONST-036)")
+				assert.Nil(t, d.GetCachedModels(),
+					"empty cache must return nil (CONST-036)")
+				assert.NotEqual(t, 3, d.GetDiscoveryTier(), "Tier 3 is removed")
+			}
+		}()
+	}
+	for w := 0; w < workers; w++ {
+		<-done
+	}
+}
+
 func BenchmarkDiscoverModels_Cached(b *testing.B) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		resp := openAIModelsResponse{

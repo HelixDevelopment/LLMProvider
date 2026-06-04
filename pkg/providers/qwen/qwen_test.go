@@ -996,15 +996,12 @@ func TestQwenProvider_HealthCheck_EmptyAPIKey(t *testing.T) {
 }
 
 func TestQwenProvider_GetCapabilities(t *testing.T) {
-	provider := NewQwenProvider("test-api-key", "https://api.example.com", "qwen-turbo")
+	provider := NewQwenProvider("", "https://api.example.com", "qwen-turbo")
 	caps := provider.GetCapabilities()
 
 	assert.NotNil(t, caps)
-	assert.NotEmpty(t, caps.SupportedModels)
-	assert.Contains(t, caps.SupportedModels, "qwen-turbo")
-	assert.Contains(t, caps.SupportedModels, "qwen-plus")
-	assert.Contains(t, caps.SupportedModels, "qwen-max")
-	assert.Contains(t, caps.SupportedModels, "qwen-max-longcontext")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 
 	assert.Contains(t, caps.SupportedFeatures, "text_completion")
 	assert.Contains(t, caps.SupportedFeatures, "chat")

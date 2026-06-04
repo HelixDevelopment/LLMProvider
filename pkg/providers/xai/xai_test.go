@@ -279,7 +279,11 @@ func TestProvider_HealthCheck_Error(t *testing.T) {
 }
 
 func TestProvider_GetCapabilities(t *testing.T) {
-	p := NewProviderWithRegion("xai-test-key", "grok-3", "eu-west-1")
+	// Offline contract (CONST-036): with no live models API reachable, model
+	// discovery returns nil — SupportedModels MUST NOT carry a hardcoded
+	// catalogue. An empty API key makes discovery skip the network Tier-1 call
+	// entirely, so this is fully hermetic + deterministic (§11.4.50 / §11.4.98).
+	p := NewProviderWithRegion("", "grok-3", "eu-west-1")
 	caps := p.GetCapabilities()
 
 	assert.True(t, caps.SupportsStreaming)
@@ -287,8 +291,8 @@ func TestProvider_GetCapabilities(t *testing.T) {
 	assert.True(t, caps.SupportsVision)
 	assert.True(t, caps.SupportsFunctionCalling)
 	assert.True(t, caps.SupportsReasoning)
-	assert.Contains(t, caps.SupportedModels, "grok-3")
-	assert.Contains(t, caps.SupportedModels, "grok-4")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 	assert.Contains(t, caps.SupportedFeatures, "web_search")
 	assert.Contains(t, caps.SupportedFeatures, "x_search")
 	assert.Equal(t, 2000000, caps.Limits.MaxTokens)

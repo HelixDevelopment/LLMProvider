@@ -247,16 +247,14 @@ func TestClaudeProvider_CompleteStream(t *testing.T) {
 }
 
 func TestClaudeProvider_GetCapabilities(t *testing.T) {
-	provider := NewClaudeProvider("test-key", "", "")
+	provider := NewClaudeProvider("", "", "")
 	caps := provider.GetCapabilities()
 
 	require.NotNil(t, caps)
 
 	// Check supported models (Claude 4 and 3.5 series)
-	assert.Contains(t, caps.SupportedModels, "claude-sonnet-4-20250514")
-	assert.Contains(t, caps.SupportedModels, "claude-3-sonnet-20240229")
-	assert.Contains(t, caps.SupportedModels, "claude-3-opus-20240229")
-	assert.Contains(t, caps.SupportedModels, "claude-3-haiku-20240307")
+	assert.Empty(t, caps.SupportedModels,
+		"offline discovery must yield no models (CONST-036: no hardcoded fallback)")
 
 	// Check supported features
 	assert.Contains(t, caps.SupportedFeatures, "text_completion")
