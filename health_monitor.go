@@ -24,6 +24,7 @@ type ProviderHealth struct {
 	LastSuccess      time.Time     `json:"last_success,omitempty"`
 	LastError        string        `json:"last_error,omitempty"`
 	ConsecutiveFails int           `json:"consecutive_fails"`
+	ConsecutiveOK    int           `json:"consecutive_ok"`
 	Latency          time.Duration `json:"latency,omitempty"`
 	CheckCount       int64         `json:"check_count"`
 	SuccessCount     int64         `json:"success_count"`
@@ -220,6 +221,7 @@ func (hm *HealthMonitor) checkProvider(providerID string, provider LLMProvider) 
 
 	if err != nil {
 		health.ConsecutiveFails++
+		health.ConsecutiveOK = 0
 		health.FailureCount++
 		health.LastError = err.Error()
 
@@ -230,11 +232,12 @@ func (hm *HealthMonitor) checkProvider(providerID string, provider LLMProvider) 
 		}
 	} else {
 		health.ConsecutiveFails = 0
+		health.ConsecutiveOK++
 		health.SuccessCount++
 		health.LastSuccess = time.Now()
 		health.LastError = ""
 
-		if health.SuccessCount >= int64(hm.config.HealthyThreshold) || health.Status == HealthStatusUnknown {
+		if health.ConsecutiveOK >= hm.config.HealthyThreshold || health.Status == HealthStatusUnknown {
 			health.Status = HealthStatusHealthy
 		}
 	}
@@ -312,10 +315,11 @@ func (hm *HealthMonitor) RecordSuccess(providerID string) {
 	}
 
 	health.ConsecutiveFails = 0
+	health.ConsecutiveOK++
 	health.SuccessCount++
 	health.LastSuccess = time.Now()
 
-	if health.Status != HealthStatusHealthy && health.SuccessCount >= int64(hm.config.HealthyThreshold) {
+	if health.Status != HealthStatusHealthy && health.ConsecutiveOK >= hm.config.HealthyThreshold {
 		oldStatus := health.Status
 		health.Status = HealthStatusHealthy
 		for _, listener := range hm.listeners {
@@ -335,6 +339,7 @@ func (hm *HealthMonitor) RecordFailure(providerID string, err error) {
 	}
 
 	health.ConsecutiveFails++
+	health.ConsecutiveOK = 0
 	health.FailureCount++
 	if err != nil {
 		health.LastError = err.Error()
