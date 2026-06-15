@@ -810,13 +810,23 @@ func (p *ClaudeProvider) ValidateConfig(config map[string]interface{}) (bool, []
 	return len(errors) == 0, errors
 }
 
+// modelsURL derives the health/models endpoint from the configured base URL.
+// Claude's base IS the messages endpoint ("/v1/messages"), so the health check
+// targets the configured baseURL directly (CONST-051(B) config-injection)
+// instead of a hardcoded production literal.
+func (p *ClaudeProvider) modelsURL() string {
+	return p.baseURL
+}
+
 // HealthCheck implements health checking for the Claude provider
 func (p *ClaudeProvider) HealthCheck() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Simple health check - try to get models list or basic endpoint
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://api.anthropic.com/v1/messages", nil)
+	// Simple health check against the configured messages endpoint. Derived from
+	// the injected baseURL (CONST-051(B) config-injection) instead of a hardcoded
+	// production literal, so a custom baseURL (e.g. a proxy) is honored.
+	req, err := http.NewRequestWithContext(ctx, "GET", p.modelsURL(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create health check request: %w", err)
 	}

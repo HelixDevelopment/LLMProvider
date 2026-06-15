@@ -606,3 +606,24 @@ func BenchmarkAI21Provider_ConvertResponse(b *testing.B) {
 		provider.convertResponse(req, resp, startTime)
 	}
 }
+
+// TestProvider_HealthCheck_UsesInjectedBaseURL proves HealthCheck derives its
+// endpoint from the configured baseURL (CONST-051(B) / HXC-085) rather than a
+// hardcoded production URL. The test fails if HealthCheck ignores the injected
+// baseURL (it would never reach this server and the path assertion would never run).
+func TestProvider_HealthCheck_UsesInjectedBaseURL(t *testing.T) {
+	hit := false
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hit = true
+		assert.Equal(t, "GET", r.Method)
+		assert.Equal(t, "/models", r.URL.Path)
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"data": []}`))
+	}))
+	defer server.Close()
+
+	// baseURL mirrors the default shape so modelsURL() resolves onto this server.
+	p := NewProvider("test-key", server.URL+"/chat/completions", "")
+	require.NoError(t, p.HealthCheck())
+	assert.True(t, hit, "HealthCheck must hit the injected baseURL, not a hardcoded URL")
+}

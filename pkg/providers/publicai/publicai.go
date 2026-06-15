@@ -9,6 +9,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	"digital.vasic.llmprovider/pkg/models"
@@ -639,11 +640,18 @@ func (p *PublicAIProvider) ValidateConfig(config map[string]interface{}) (bool, 
 	return len(errors) == 0, errors
 }
 
+// modelsURL derives the models endpoint from the configured base URL so the
+// health check honors a custom baseURL (CONST-051(B) config-injection) instead
+// of a hardcoded production constant.
+func (p *PublicAIProvider) modelsURL() string {
+	return strings.TrimSuffix(p.baseURL, "/chat/completions") + "/models"
+}
+
 func (p *PublicAIProvider) HealthCheck() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "GET", PublicAIModelsURL, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", p.modelsURL(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create health check request: %w", err)
 	}
