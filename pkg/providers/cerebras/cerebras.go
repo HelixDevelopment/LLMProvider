@@ -9,6 +9,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	"digital.vasic.llmprovider/pkg/models"
@@ -691,13 +692,20 @@ func (p *CerebrasProvider) ValidateConfig(config map[string]interface{}) (bool, 
 	return len(errors) == 0, errors
 }
 
+// modelsURL derives the models endpoint from the configured base URL so the
+// health check honors a custom baseURL (CONST-051(B) config-injection) instead
+// of a hardcoded production literal.
+func (p *CerebrasProvider) modelsURL() string {
+	return strings.TrimSuffix(p.baseURL, "/chat/completions") + "/models"
+}
+
 // HealthCheck implements health checking for the Cerebras provider
 func (p *CerebrasProvider) HealthCheck() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	// Simple health check - try to get models list
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://api.cerebras.ai/v1/models", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", p.modelsURL(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create health check request: %w", err)
 	}

@@ -389,11 +389,20 @@ func (p *Provider) CompleteStream(ctx context.Context, req *models.LLMRequest) (
 }
 
 // HealthCheck verifies provider connectivity
+// modelsURL derives the models endpoint from the configured base URL so the
+// health check honors a custom baseURL (CONST-051(B) config-injection) instead
+// of a hardcoded production constant. Cohere's chat base ("/v2/chat") and models
+// path ("/v1/models") differ in version, so the host root is taken from baseURL.
+func (p *Provider) modelsURL() string {
+	root := strings.TrimSuffix(p.baseURL, "/v2/chat")
+	return root + "/v1/models"
+}
+
 func (p *Provider) HealthCheck() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	httpReq, err := http.NewRequestWithContext(ctx, "GET", CohereModelsURL, nil)
+	httpReq, err := http.NewRequestWithContext(ctx, "GET", p.modelsURL(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
