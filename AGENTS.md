@@ -1,3 +1,14 @@
+<!-- BEGIN constitution-inheritance pointer (managed) -->
+## INHERITED FROM Helix Constitution
+
+This module is a submodule of a project that includes the Helix
+Constitution submodule. All rules in `constitution/CLAUDE.md` and the
+`constitution/Constitution.md` it references apply unconditionally.
+Locate the constitution submodule from any arbitrary nested depth
+using its `find_constitution.sh` helper.
+
+Canonical reference: https://github.com/HelixDevelopment/HelixConstitution
+<!-- END constitution-inheritance pointer (managed) -->
 # AGENTS.md - LLMProvider Module
 > **Base agent rules:** `HelixConstitution/AGENTS.md` — READ IT FIRST.
 > All rules in `HelixConstitution/AGENTS.md` apply unconditionally.
