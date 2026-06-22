@@ -9,6 +9,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -18,7 +19,45 @@ import (
 
 const (
 	defaultBaseURL = "https://openrouter.ai/api/v1"
+
+	// envAppTitle and envHTTPReferer are the environment variables a consuming
+	// application may set to supply its own OpenRouter attribution headers.
+	// This submodule is reusable and intentionally project-agnostic: the
+	// consumer (not this module) decides the title/referer it reports.
+	envAppTitle    = "OPENROUTER_APP_TITLE"
+	envHTTPReferer = "OPENROUTER_HTTP_REFERER"
+
+	// defaultAppTitle and defaultHTTPReferer are NEUTRAL, generic fallbacks
+	// derived from this module's own identity. They contain no consuming
+	// project name so the submodule stays decoupled from any one project.
+	defaultAppTitle    = "llm_provider"
+	defaultHTTPReferer = "llm_provider"
 )
+
+// resolveAppTitle returns the configured X-Title value, falling back to the
+// OPENROUTER_APP_TITLE environment variable and finally to a neutral default.
+func resolveAppTitle(configured string) string {
+	if configured != "" {
+		return configured
+	}
+	if env := os.Getenv(envAppTitle); env != "" {
+		return env
+	}
+	return defaultAppTitle
+}
+
+// resolveHTTPReferer returns the configured HTTP-Referer value, falling back to
+// the OPENROUTER_HTTP_REFERER environment variable and finally to a neutral
+// default.
+func resolveHTTPReferer(configured string) string {
+	if configured != "" {
+		return configured
+	}
+	if env := os.Getenv(envHTTPReferer); env != "" {
+		return env
+	}
+	return defaultHTTPReferer
+}
 
 // RetryConfig defines retry behavior for API calls
 type RetryConfig struct {
@@ -45,6 +84,26 @@ type SimpleOpenRouterProvider struct {
 	client      *http.Client
 	retryConfig RetryConfig
 	discoverer  *discovery.Discoverer
+
+	// appTitle and httpReferer are the OpenRouter attribution headers
+	// (X-Title and HTTP-Referer) reported on every request. They are
+	// resolved once at construction from config -> env -> neutral default,
+	// keeping this submodule decoupled from any specific consuming project.
+	appTitle    string
+	httpReferer string
+}
+
+// SetAttribution overrides the OpenRouter attribution headers (X-Title and
+// HTTP-Referer) reported on every request. Empty arguments are ignored so the
+// resolved config/env/default values are preserved. This lets a consuming
+// application supply its own identity without modifying this submodule.
+func (p *SimpleOpenRouterProvider) SetAttribution(appTitle, httpReferer string) {
+	if appTitle != "" {
+		p.appTitle = appTitle
+	}
+	if httpReferer != "" {
+		p.httpReferer = httpReferer
+	}
 }
 
 // NewSimpleOpenRouterProvider creates a new OpenRouter provider
@@ -62,6 +121,8 @@ func NewSimpleOpenRouterProviderWithRetry(apiKey, baseURL string, retryConfig Re
 	if baseURL == "" {
 		baseURL = defaultBaseURL
 	}
+	appTitle := resolveAppTitle("")
+	httpReferer := resolveHTTPReferer("")
 	p := &SimpleOpenRouterProvider{
 		apiKey:  apiKey,
 		baseURL: baseURL,
@@ -69,6 +130,8 @@ func NewSimpleOpenRouterProviderWithRetry(apiKey, baseURL string, retryConfig Re
 			Timeout: 60 * time.Second,
 		},
 		retryConfig: retryConfig,
+		appTitle:    appTitle,
+		httpReferer: httpReferer,
 	}
 	p.discoverer = discovery.NewDiscoverer(discovery.ProviderConfig{
 		ProviderName:   "openrouter",
@@ -76,7 +139,7 @@ func NewSimpleOpenRouterProviderWithRetry(apiKey, baseURL string, retryConfig Re
 		ModelsDevID:    "openrouter",
 		APIKey:         apiKey,
 		ExtraHeaders: map[string]string{
-			"HTTP-Referer": "helixagent",
+			"HTTP-Referer": httpReferer,
 		},
 		FallbackModels: []string{
 			// Premium models
@@ -220,8 +283,8 @@ func (p *SimpleOpenRouterProvider) Complete(ctx context.Context, req *models.LLM
 		// Set headers
 		httpReq.Header.Set("Content-Type", "application/json")
 		httpReq.Header.Set("Authorization", "Bearer "+p.apiKey)
-		httpReq.Header.Set("HTTP-Referer", "helixagent")
-		httpReq.Header.Set("X-Title", "HelixAgent")
+		httpReq.Header.Set("HTTP-Referer", p.httpReferer)
+		httpReq.Header.Set("X-Title", p.appTitle)
 
 		// Make request
 		resp, err := p.client.Do(httpReq)
@@ -446,8 +509,8 @@ func (p *SimpleOpenRouterProvider) CompleteStream(ctx context.Context, req *mode
 
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+p.apiKey)
-	httpReq.Header.Set("HTTP-Referer", "helixagent")
-	httpReq.Header.Set("X-Title", "HelixAgent")
+	httpReq.Header.Set("HTTP-Referer", p.httpReferer)
+	httpReq.Header.Set("X-Title", p.appTitle)
 	httpReq.Header.Set("Accept", "text/event-stream")
 
 	resp, err := p.client.Do(httpReq)
@@ -628,8 +691,8 @@ func (p *SimpleOpenRouterProvider) HealthCheck() error {
 	}
 
 	req.Header.Set("Authorization", "Bearer "+p.apiKey)
-	req.Header.Set("HTTP-Referer", "helixagent")
-	req.Header.Set("X-Title", "HelixAgent")
+	req.Header.Set("HTTP-Referer", p.httpReferer)
+	req.Header.Set("X-Title", p.appTitle)
 
 	resp, err := p.client.Do(req)
 	if err != nil {
