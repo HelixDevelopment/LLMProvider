@@ -34,7 +34,7 @@ help:
 	@echo "  vet            - Run go vet"
 	@echo "  clean          - Clean build cache"
 
-# Definition of Done gates — portable drop-in from HelixAgent
+# Definition of Done gates — portable drop-in from the parent project
 .PHONY: no-silent-skips no-silent-skips-warn demo-all demo-all-warn demo-one ci-validate-all
 
 no-silent-skips:

@@ -364,7 +364,7 @@ meta-repo close-out round.
 
 ## License
 
-This module is part of the HelixAgent project. See root project for license details.
+This module is part of the parent project. See root project for license details.
 
 ## Contributing
 

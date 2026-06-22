@@ -138,7 +138,7 @@ jittered_delay = delay +/- (delay * JitterFactor * random)
 
 ### Lazy Provider (Conceptual)
 
-The lazy provider pattern defers expensive initialization (API key validation, model listing, connection setup) until the first actual request. This is critical for HelixAgent's startup, where 43 providers are registered but only a subset may be used.
+The lazy provider pattern defers expensive initialization (API key validation, model listing, connection setup) until the first actual request. This is critical for the parent project's startup, where 43 providers are registered but only a subset may be used.
 
 **Key Characteristics:**
 - Uses `sync.Once` for thread-safe initialization
@@ -162,9 +162,9 @@ The lazy provider pattern defers expensive initialization (API key validation, m
 
 ---
 
-## Integration with HelixAgent
+## Integration with the parent project
 
-In HelixAgent, the LLMProvider module is used as follows:
+In the parent project, the LLMProvider module is used as follows:
 
 1. **Provider Registry** (`internal/services/provider_registry.go`): Registers 43 LLM providers, each wrapped with a circuit breaker from the `CircuitBreakerManager`.
 

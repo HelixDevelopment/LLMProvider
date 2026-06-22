@@ -381,7 +381,7 @@ All exported types and methods are safe for concurrent use:
 
 ## NVIDIA Nemotron RAG Support
 
-HelixAgent provides comprehensive integration with NVIDIA's Nemotron RAG models for document processing, multimodal understanding, and grounded answer generation.
+The parent project provides comprehensive integration with NVIDIA's Nemotron RAG models for document processing, multimodal understanding, and grounded answer generation.
 
 ### Supported Models
 

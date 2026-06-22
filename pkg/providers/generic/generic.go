@@ -26,7 +26,7 @@ const (
 
 // Provider implements LLMProvider for any OpenAI-compatible chat completions endpoint.
 // This enables verification of providers that have OpenAI-compatible APIs but no
-// dedicated HelixAgent provider implementation (e.g., nvidia, sambanova, hyperbolic).
+// dedicated parent-project provider implementation (e.g., nvidia, sambanova, hyperbolic).
 type Provider struct {
 	apiKey     string
 	baseURL    string

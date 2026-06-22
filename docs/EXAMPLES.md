@@ -399,4 +399,4 @@ func setupProvider(name, apiKey, baseURL string) (llmprovider.LLMProvider, error
 }
 ```
 
-This pattern is used throughout HelixAgent to provide fault-tolerant access to all 43 LLM providers.
+This pattern is used throughout the parent project to provide fault-tolerant access to all 43 LLM providers.

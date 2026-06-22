@@ -320,7 +320,7 @@ Requests are cloned for each attempt to handle body consumption.</p>
 <h3 id="lazy-provider-conceptual">Lazy Provider (Conceptual)</h3>
 <p>The lazy provider pattern defers expensive initialization (API key
 validation, model listing, connection setup) until the first actual
-request. This is critical for HelixAgent&#39;s startup, where 43 providers
+request. This is critical for the parent project&#39;s startup, where 43 providers
 are registered but only a subset may be used.</p>
 <p><strong>Key Characteristics:</strong></p>
 <ul>
@@ -375,8 +375,8 @@ listener list before notification to avoid holding the lock during
 potentially slow callbacks. The <code>Reset</code> method explicitly
 unlocks before notifying listeners to prevent deadlocks.</p>
 <hr />
-<h2 id="integration-with-helixagent">Integration with HelixAgent</h2>
-<p>In HelixAgent, the LLMProvider module is used as follows:</p>
+<h2 id="integration-with-helixagent">Integration with the parent project</h2>
+<p>In the parent project, the LLMProvider module is used as follows:</p>
 <ol type="1">
 <li><p><strong>Provider Registry</strong>
 (<code>internal/services/provider_registry.go</code>): Registers 43 LLM

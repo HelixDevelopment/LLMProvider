@@ -598,8 +598,7 @@ place and verified) and the kernel OOM killer never fired — but the user
 had to manually end the session anyway, because nothing prevented
 overlapping heavy workloads from saturating the slice. CONST-036 closes
 that loophole at both the source-code layer and the operational layer.
-See <code>docs/issues/fixed/SESSION_LOSS_2026-04-28.md</code> in the
-HelixAgent project.</p>
+See <code>docs/issues/fixed/SESSION_LOSS_2026-04-28.md</code> in the parent project.</p>
 <p><strong>Forbidden direct invocations</strong> (non-exhaustive):</p>
 <ul>
 <li><code>loginctl terminate-user|terminate-session|kill-user|kill-session</code></li>
@@ -636,8 +635,7 @@ Rootless podman containers die with the user manager.</li>
 id="const-035-end-user-usability-mandate-2026-04-29-strengthening">CONST-035
 — End-User Usability Mandate (2026-04-29 strengthening)</h2>
 <p>A test or Challenge that PASSES is a CLAIM that the tested behavior
-<strong>works for the end user of the product</strong>. The HelixAgent
-project has repeatedly hit the failure mode where every test ran green
+<strong>works for the end user of the product</strong>. The parent project has repeatedly hit the failure mode where every test ran green
 AND every Challenge reported PASS, yet most product features did not
 actually work — buggy challenge wrappers masked failed assertions,
 scripts checked file existence without executing the file,
@@ -663,7 +661,7 @@ aliases the dispatcher actually accepts.</li>
 coverage is loud rather than silent.</p>
 <h3
 id="bluff-taxonomy-each-pattern-observed-in-helixagent-and-now-forbidden">Bluff
-taxonomy (each pattern observed in HelixAgent and now forbidden)</h3>
+taxonomy (each pattern observed in the parent project and now forbidden)</h3>
 <ul>
 <li><strong>Wrapper bluff</strong> — assertions PASS but the wrapper’s
 exit-code logic is buggy, marking the run FAILED (or the inverse:
@@ -795,7 +793,7 @@ without ignoring, skipping, slacking or forgetting it!”</em></td>
 </tr>
 <tr>
 <td>No feature / functionality / flow / use case / edge case / service /
-application on any supported platform of HelixCode may be considered
+application on any supported platform of the project may be considered
 deliverable until covered by automation tests proving six invariants:
 (1) anti-bluff posture (CONST-035) with captured runtime evidence; (2)
 proof of working capability end-to-end on target topology (no mocks
@@ -904,19 +902,19 @@ fakes, placeholders, <code>TODO</code>, <code>FIXME</code>, “for now”,
 “in production this would”, or empty-implementation patterns are
 PERMITTED only in unit-test sources (<code>*_test.go</code> files
 invoked without the integration build tag;
-<code>HelixCode/tests/unit/</code>; etc.). Every other test type —
+<code>&lt;repo_root&gt;/tests/unit/</code>; etc.). Every other test type —
 integration, E2E, full automation, security, DDoS, scaling, chaos,
 stress, performance, benchmarking, UI, UX, Challenges, HelixQA — MUST
-exercise the real, fully implemented HelixCode system against real
+exercise the real, fully implemented project system against real
 infrastructure (real PostgreSQL, real Redis, real LLM endpoints, real
 containers, real captured devices). Production code (anything under
-<code>HelixCode/cmd/</code>, <code>HelixCode/applications/</code>,
-<code>HelixCode/internal/&lt;pkg&gt;/&lt;file&gt;.go</code> not ending
+<code>&lt;repo_root&gt;/cmd/</code>, <code>&lt;repo_root&gt;/applications/</code>,
+<code>&lt;repo_root&gt;/internal/&lt;pkg&gt;/&lt;file&gt;.go</code> not ending
 <code>_test.go</code>) MUST NOT import from
-<code>HelixCode/internal/mocks/</code>.</td>
+<code>&lt;repo_root&gt;/internal/mocks/</code>.</td>
 </tr>
 <tr>
-<td><strong>(B) 100% test-type coverage.</strong> HelixCode’s codebase
+<td><strong>(B) 100% test-type coverage.</strong> the project’s codebase
 MUST be covered by every supported test type the domain warrants: -
 <strong>Unit</strong> — fast, isolated, mocks permitted per (A). -
 <strong>Integration</strong> — multi-component, no mocks, real backing
@@ -953,7 +951,7 @@ at <code>./Challenges/</code>. - HelixQA —
 <code>git@github.com:HelixDevelopment/HelixQA.git</code> — incorporated
 at <code>./HelixQA/</code>. - Any additional functionality submodules
 under <code>vasic-digital/*</code> / <code>HelixDevelopment/*</code>
-orgs that HelixCode depends on — incorporate rather than duplicate work
+orgs that the project depends on — incorporate rather than duplicate work
 the orgs already maintain.</td>
 </tr>
 <tr>
@@ -997,7 +995,7 @@ directly from project’s root project_name/submodule_name or some more
 proper structure project_name/submodules/submodule_name!”</em></td>
 </tr>
 <tr>
-<td>Three cooperating invariants apply to every HelixCode-owned
+<td>Three cooperating invariants apply to every owned
 submodule (those whose upstream <code>origin</code> lives under
 <code>vasic-digital</code>, <code>HelixDevelopment</code>,
 <code>red-elf</code>, <code>ATMOSphere1234321</code>,
@@ -1007,11 +1005,11 @@ submodule (those whose upstream <code>origin</code> lives under
 </tr>
 <tr>
 <td><strong>(A) Equal-codebase.</strong> Every owned-by-us submodule is
-an <strong>equal part</strong> of HelixCode’s codebase. The same
+an <strong>equal part</strong> of the project’s codebase. The same
 engineering practice — analysis, extension, test creation, gap-filling,
 bug-fix, documentation (user manuals, guides, diagrams, graphs, SQL
 definitions, website pages, all materials) — applies to each owned
-submodule on equal basis. A round of work that improves only HelixCode’s
+submodule on equal basis. A round of work that improves only the project’s
 main while leaving an owned-submodule deficiency unaddressed is a
 CONST-051 violation, severity-equivalent to a §11.4 PASS-bluff at the
 project-scope layer. The §11.4.25 / CONST-048 coverage ledger MUST list
@@ -1019,10 +1017,10 @@ every owned submodule as an in-scope target.</td>
 </tr>
 <tr>
 <td><strong>(B) Decoupling / reusability.</strong> Owned submodules MUST
-remain fully decoupled from HelixCode (and any other consuming project).
-No HelixCode-specific context, hardcoded paths, hostnames, asset names,
+remain fully decoupled from the project (and any other consuming project).
+No project-specific context, hardcoded paths, hostnames, asset names,
 or runtime assumptions may be introduced into an owned submodule’s
-source tree. When a submodule needs information from HelixCode, the
+source tree. When a submodule needs information from the project, the
 honest path is configuration injection (env var, config file,
 constructor parameter) — never a hardcoded reach into the parent’s tree.
 Every owned submodule MUST be project-not-aware, fully reusable,
@@ -1030,10 +1028,10 @@ modular, and completely testable as a standalone repository.</td>
 </tr>
 <tr>
 <td><strong>(C) Dependency-layout.</strong> Every dependency that an
-owned submodule consumes MUST be accessible from HelixCode’s root at one
+owned submodule consumes MUST be accessible from the project’s root at one
 of two canonical paths: -
 <code>&lt;repo_root&gt;/&lt;submodule_name&gt;/</code> (flat layout —
-current HelixCode layout for Challenges, HelixQA, Containers, Security,
+current project layout for Challenges, HelixQA, Containers, Security,
 etc.) -
 <code>&lt;repo_root&gt;/submodules/&lt;submodule_name&gt;/</code>
 (grouped layout — alternate)</td>
@@ -1042,7 +1040,7 @@ etc.) -
 <td><strong>Nested own-org submodule chains are FORBIDDEN.</strong> A
 submodule MUST NOT have its own <code>.gitmodules</code> entries pulling
 in further owned-by-us repos. Every dependency required by submodule X
-is added to HelixCode’s root at the canonical path; X reaches it via
+is added to the project’s root at the canonical path; X reaches it via
 documented import / SDK path / runtime resolver — never via its own
 nested submodule pointer. Third-party submodules (not under our orgs)
 are exempt — they MAY appear at any depth.</td>
@@ -1068,7 +1066,7 @@ mutation pairs, workflow integration).</td>
 2. Challenge demonstrating the need 3. 72-hour review period 4. Approval
 by project architect 5. Update to all submodule governance files</p>
 <hr />
-<p><em>This Constitution is the supreme law of the HelixCode project. No
+<p><em>This Constitution is the supreme law of the project. No
 code, test, or process may contradict it.</em></p>
 <h2
 id="const-052-lowercase-snake_case-naming-mandate-cascaded-from-constitution-submodule-11.4.29">CONST-052:
@@ -1093,10 +1091,10 @@ Upstreams and upstreams directory. … NOTE: Rules lowercase / snake-case
 do apply to all project files as well and references to it and from
 them!“*</p>
 </blockquote>
-<p>Every directory, submodule, and file in HelixCode MUST use lowercase
-snake_case names. Existing non-compliant names (<code>HelixCode/</code>,
+<p>Every directory, submodule, and file in the project MUST use lowercase
+snake_case names. Existing non-compliant names (<code>&lt;repo_root&gt;/</code>,
 <code>Challenges/</code>, <code>Containers/</code>,
-<code>HelixAgent/</code>, <code>HelixQA/</code>, <code>Security/</code>,
+<code>&lt;parent_project&gt;/</code>, <code>HelixQA/</code>, <code>Security/</code>,
 <code>Github-Pages-Website/</code>, <code>Upstreams/</code>,
 <code>Dependencies/</code>, etc.) MUST be renamed as part of the phased
 migration opened by this clause. Every reference (configs, docs, links,
@@ -1294,7 +1292,7 @@ executed from the root of the cloned (added) repository - only if in it
 is Upstreams or upstreams directory present with bash script files
 (recipes) for all repository’s upstreams!”</em></p>
 </blockquote>
-<p>Every clone / add of a Git repository under HelixCode MUST be
+<p>Every clone / add of a Git repository under the project MUST be
 followed by <code>install_upstreams</code> invocation from the
 repository’s root IF its tree contains <code>upstreams/</code> (or
 legacy <code>Upstreams/</code> per CONST-052 transition) populated with

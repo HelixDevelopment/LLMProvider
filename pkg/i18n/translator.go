@@ -2,7 +2,7 @@
 // per CONST-046 (round-337 §11.4 anti-bluff sweep, 2026-05-19).
 //
 // Mirrors the "consumer defines its own Translator interface" pattern
-// of every prior CONST-046-migrated package in the HelixCode codebase
+// of every prior CONST-046-migrated package in the project codebase
 // (reference seam: helix_code/internal/approval/i18n/translator.go).
 //
 // CONST-051(B) decoupling: this package is project-not-aware. It
