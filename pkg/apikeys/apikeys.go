@@ -1,10 +1,10 @@
-// Package apikeys is the central authority within LLMProvider for resolving
+// Package apikeys is the central authority within this module for resolving
 // per-provider API credentials. It reads env-vars in the ApiKey_<Provider>
 // convention exported by the operator's ~/api_keys.sh — the same convention
-// LLMsVerifier uses (see its challenges/scripts/run_comprehensive_challenge.sh,
+// a downstream verifier uses (see its challenges/scripts/run_comprehensive_challenge.sh,
 // where every provider's `api_key: "${ApiKey_<Provider>}"` placeholder is
-// interpolated from the same env). This keeps Yole, LLMProvider, and
-// LLMsVerifier on a single source of credential truth and prevents the
+// interpolated from the same env). This keeps all consuming projects on a
+// single source of credential truth and prevents the
 // "tests pass because hardcoded keys, product broken because real keys not
 // wired" class of bluff.
 //
